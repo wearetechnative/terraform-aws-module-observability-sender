@@ -1,10 +1,10 @@
-module "lambda" {
+module "lambda_cw_alarm_creator" {
   # Pinned to a tag but needs to be updated once we add an official release tag.
   source = "git@github.com:TechNative-B-V/modules-aws.git//lambda?ref=v1.1.7"
 
 
   name              = local.lambda_cw_alarm_name
-  role_arn          = module.iam_role.role_arn
+  role_arn          = module.iam_role_lambda_cw_alarm_creator.role_arn
   role_arn_provided = true
   kms_key_arn       = var.kms_key_arn
 
@@ -37,7 +37,7 @@ resource "aws_cloudwatch_event_target" "lambda_target" {
   rule           = aws_cloudwatch_event_rule.refresh_alarms.id
   event_bus_name = aws_cloudwatch_event_rule.refresh_alarms.event_bus_name
 
-  arn = module.lambda.lambda_function_arn
+  arn = module.lambda_cw_alarm_creator.lambda_function_arn
 
   dead_letter_config {
     arn = var.sqs_dlq_arn
@@ -45,9 +45,9 @@ resource "aws_cloudwatch_event_target" "lambda_target" {
 }
 
 resource "aws_lambda_permission" "allow_eventbridge" {
-  statement_id_prefix = module.lambda.lambda_function_name
+  statement_id_prefix = module.lambda_cw_alarm_creator.lambda_function_name
   action              = "lambda:InvokeFunction"
-  function_name       = module.lambda.lambda_function_name
+  function_name       = module.lambda_cw_alarm_creator.lambda_function_name
   principal           = "events.amazonaws.com"
   source_arn          = aws_cloudwatch_event_rule.refresh_alarms.arn
 }

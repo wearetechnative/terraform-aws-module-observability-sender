@@ -91,8 +91,10 @@ To use this module ...
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_iam_role"></a> [iam\_role](#module\_iam\_role) | git@github.com:TechNative-B-V/modules-aws.git//identity_and_access_management/iam_role | n/a |
-| <a name="module_lambda"></a> [lambda](#module\_lambda) | git@github.com:TechNative-B-V/modules-aws.git//lambda | v1.1.7 |
+| <a name="module_iam_role_lambda_cw_alarm_creator"></a> [iam\_role\_lambda\_cw\_alarm\_creator](#module\_iam\_role\_lambda\_cw\_alarm\_creator) | git@github.com:TechNative-B-V/modules-aws.git//identity_and_access_management/iam_role | n/a |
+| <a name="module_iam_role_lambda_payload_forwarder"></a> [iam\_role\_lambda\_payload\_forwarder](#module\_iam\_role\_lambda\_payload\_forwarder) | ./../../../identity_and_access_management/iam_role | n/a |
+| <a name="module_lambda_cw_alarm_creator"></a> [lambda\_cw\_alarm\_creator](#module\_lambda\_cw\_alarm\_creator) | git@github.com:TechNative-B-V/modules-aws.git//lambda | v1.1.7 |
+| <a name="module_lambda_payload_forwarder"></a> [lambda\_payload\_forwarder](#module\_lambda\_payload\_forwarder) | git@github.com:TechNative-B-V/modules-aws.git//lambda | v1.1.7 |
 
 ## Resources
 
@@ -104,12 +106,14 @@ To use this module ...
 | [aws_cloudwatch_event_target.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
 | [aws_kms_grant.give_lambda_role_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_grant) | resource |
 | [aws_lambda_permission.allow_eventbridge](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_permission) | resource |
+| [aws_lambda_permission.payload_forwarder](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_permission) | resource |
 | [aws_sns_topic_policy.allow_lambda_sns_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic_policy) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_iam_policy_document.cloudwatch_alarms](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.eventbus](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.kms](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.lambda_ec2_read_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.lambda_monitoring_sqs_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.sns_topic_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.sqs_dlq](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |

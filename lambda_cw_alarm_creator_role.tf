@@ -1,6 +1,6 @@
 #--- cw-alarm-creator/role.tf ---
 
-module "iam_role" {
+module "iam_role_lambda_cw_alarm_creator" {
   source = "git@github.com:TechNative-B-V/modules-aws.git//identity_and_access_management/iam_role"
 
   role_name = local.lambda_cw_alarm_name
@@ -75,7 +75,7 @@ data "aws_iam_policy_document" "lambda_ec2_read_access" {
 resource "aws_kms_grant" "give_lambda_role_access" {
   name              = "lambda-role-kms-grant-access"
   key_id            = var.kms_key_arn
-  grantee_principal = module.iam_role.role_arn
+  grantee_principal = module.iam_role_lambda_cw_alarm_creator.role_arn
   operations        = ["Decrypt", "GenerateDataKey"]
 }
 
