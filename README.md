@@ -91,7 +91,7 @@ To use this module ...
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_lambda_function"></a> [lambda\_function](#module\_lambda\_function) | git@github.com:TechNative-B-V/modules-aws.git//lambda | main |
+| <a name="module_lambda_function"></a> [lambda\_function](#module\_lambda\_function) | git@github.com:TechNative-B-V/modules-aws.git//lambda | n/a |
 
 ## Resources
 

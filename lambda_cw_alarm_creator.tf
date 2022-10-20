@@ -1,5 +1,7 @@
 module "lambda_function" {
-  source = "git@github.com:TechNative-B-V/modules-aws.git//lambda?ref=main"
+  #source = "git@github.com:TechNative-B-V/modules-aws.git//lambda?ref="
+  source = "git@github.com:TechNative-B-V/modules-aws.git//lambda"
+
 
   name        = "cloudwatch_alarm_creator"
   role_arn    = module.iam_role.role_arn
@@ -21,6 +23,7 @@ module "lambda_function" {
   sqs_dlq_arn = var.sqs_dlq_arn
 }
 
+# Cron job event rule directly tied to lambda function.
 resource "aws_cloudwatch_event_rule" "refresh_alarms" {
   name        = "refresh-cloudwatch-alarms-rule"
   description = "Refresh CloudWatch alarms every 4 hours."
