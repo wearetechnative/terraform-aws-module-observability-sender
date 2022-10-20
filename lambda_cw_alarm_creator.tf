@@ -1,6 +1,6 @@
 module "lambda_function" {
-  #source = "git@github.com:TechNative-B-V/modules-aws.git//lambda?ref="
-  source = "git@github.com:TechNative-B-V/modules-aws.git//lambda"
+  # Pinned but needs to be updated once we add a tag number.
+  source = "git@github.com:TechNative-B-V/modules-aws.git//lambda?ref=v1.1.7"
 
 
   name        = "cloudwatch_alarm_creator"
