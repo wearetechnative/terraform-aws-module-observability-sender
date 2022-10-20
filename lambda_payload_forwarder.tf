@@ -35,31 +35,3 @@ resource "aws_lambda_permission" "payload_forwarder" {
   principal     = "sns.amazonaws.com"
   source_arn    = var.sns_notification_receiver_topic_arn
 }
-
-# resource "aws_lambda_function" "cw_alarm_forwarder" {
-#   function_name = var.name
-#   role          = module.iam_role_lambda_cw_alarm_creator.role_arn
-
-#   architectures = ["arm64"] # optimize for speed, usage
-#   runtime       = "python3.9"
-#   kms_key_arn   = var.kms_key_arn
-
-
-#   description = "Forwards CloudWatch Alarm payload when an Alarm is triggered."
-#   filename    = "${path.module}/lambda_function.zip"
-
-#   memory_size                    = 128
-#   reserved_concurrent_executions = -1 # prevent DDos
-
-#   package_type     = "Zip"
-#   handler          = "lambda_function.lambda_handler"
-#   source_code_hash = data.archive_file.lambda_source.output_base64sha256
-#   publish          = true
-
-#   environment {
-#     variables = {
-#       MONITORING_ACCOUNT_SQS_URL = var.monitoring_account_sqs_url
-#     }
-#   }
-
-# }
