@@ -91,5 +91,10 @@ To use this module ...
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_lambda_cloudwatch_alarm_creator_arn"></a> [lambda\_cloudwatch\_alarm\_creator\_arn](#output\_lambda\_cloudwatch\_alarm\_creator\_arn) | n/a |
+| <a name="output_lambda_cloudwatch_alarm_creator_name"></a> [lambda\_cloudwatch\_alarm\_creator\_name](#output\_lambda\_cloudwatch\_alarm\_creator\_name) | n/a |
+| <a name="output_lambda_payload_forwarder_arn"></a> [lambda\_payload\_forwarder\_arn](#output\_lambda\_payload\_forwarder\_arn) | n/a |
+| <a name="output_lambda_payload_forwarder_name"></a> [lambda\_payload\_forwarder\_name](#output\_lambda\_payload\_forwarder\_name) | n/a |
 <!-- END_TF_DOCS -->
