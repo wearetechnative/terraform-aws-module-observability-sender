@@ -8,7 +8,7 @@ module "iam_role_lambda_cw_alarm_creator" {
 
   customer_managed_policies = {
     "kms" : jsondecode(data.aws_iam_policy_document.kms.json)
-    "sqs_dlq" : jsondecode(data.aws_iam_policy_document.sqs_dlq.json)
+    "lambda_cw_alarm_creator_dlq_policy" : jsondecode(data.aws_iam_policy_document.sqs_dlq.json)
     "cloudwatch_alarms" : jsondecode(data.aws_iam_policy_document.cloudwatch_alarms.json)
     "eventbus" : jsondecode(data.aws_iam_policy_document.eventbus.json)
     "lambda_ec2_read_access" : jsondecode(data.aws_iam_policy_document.lambda_ec2_read_access.json)
@@ -31,7 +31,7 @@ data "aws_iam_policy_document" "kms" {
   }
 }
 
-data "aws_iam_policy_document" "sqs_dlq" {
+data "aws_iam_policy_document" "lambda_cw_alarm_creator_dlq_policy" {
   statement {
     sid = "AllowDLQAccess"
 

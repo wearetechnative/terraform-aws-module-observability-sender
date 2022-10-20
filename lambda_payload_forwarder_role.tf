@@ -7,8 +7,8 @@ module "iam_role_lambda_payload_forwarder" {
   role_path = local.lambda_payload_forwarder
 
   customer_managed_policies = {
-    "sqs_dlq" : jsondecode(data.aws_iam_policy_document.sqs_dlq.json)
-    "lambda_monitoring_account_sqs_access" : jsondecode(data.aws_iam_policy_document.lambda_monitoring_sqs_access.json)
+    "lambda_payload_forwarder_dlq_policy" : jsondecode(data.aws_iam_policy_document.sqs_dlq.json)
+    "lambda_monitoring_account_sqs_access_policy" : jsondecode(data.aws_iam_policy_document.lambda_monitoring_sqs_access.json)
   }
 
   trust_relationship = {
@@ -17,7 +17,7 @@ module "iam_role_lambda_payload_forwarder" {
 
 }
 
-data "aws_iam_policy_document" "sqs_dlq" {
+data "aws_iam_policy_document" "lambda_payload_forwarder_dlq_policy" {
   statement {
     sid = "AllowDLQAccess"
 
@@ -27,7 +27,7 @@ data "aws_iam_policy_document" "sqs_dlq" {
   }
 }
 
-data "aws_iam_policy_document" "lambda_monitoring_sqs_access" {
+data "aws_iam_policy_document" "lambda_monitoring_sqs_access_policy" {
   statement {
     sid = "AllowLambdaAccessToMonitoringAccountSqs"
 
