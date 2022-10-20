@@ -6,8 +6,9 @@ module "lambda_payload_forwarder" {
   # Pinned to a tag but needs to be updated once we add an official release tag.
   source = "git@github.com:TechNative-B-V/modules-aws.git//lambda?ref=v1.1.7"
 
-  name              = local.lambda_payload_forwarder
-  role_arn          = module.iam_role.role_arn
+  name     = local.lambda_payload_forwarder
+  role_arn = module.iam_role_lambda_payload_forwarder.role_arn
+
   role_arn_provided = true
   kms_key_arn       = var.kms_key_arn
 
