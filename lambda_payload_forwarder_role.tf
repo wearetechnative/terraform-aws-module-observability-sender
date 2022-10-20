@@ -27,7 +27,7 @@ data "aws_iam_policy_document" "lambda_payload_forwarder_dlq_policy" {
   }
 }
 
-data "aws_iam_policy_document" "lambda_monitoring_sqs_access_policy" {
+data "aws_iam_policy_document" "lambda_monitoring_account_sqs_access_policy" {
   statement {
     sid = "AllowLambdaAccessToMonitoringAccountSqs"
 
