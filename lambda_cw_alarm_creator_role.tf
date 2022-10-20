@@ -1,7 +1,7 @@
 #--- cw-alarm-creator/role.tf ---
 
 module "iam_role_lambda_cw_alarm_creator" {
-  source = "git@github.com:TechNative-B-V/modules-aws.git//identity_and_access_management/iam_role"
+  source = "git@github.com:TechNative-B-V/modules-aws.git//identity_and_access_management/iam_role?ref=v1.1.7"
 
   role_name = local.lambda_cw_alarm_name
   role_path = local.lambda_cw_alarm_name
