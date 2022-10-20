@@ -126,6 +126,8 @@ To use this module ...
 |------|-------------|------|---------|:--------:|
 | <a name="input_eventbridge_rules"></a> [eventbridge\_rules](#input\_eventbridge\_rules) | EventBridge rule settings. | <pre>map(object({<br>    description : string<br>    enabled : bool<br>    event_pattern : string<br>    })<br>  )</pre> | n/a | yes |
 | <a name="input_kms_key_arn"></a> [kms\_key\_arn](#input\_kms\_key\_arn) | ARN of the KMS key. | `string` | n/a | yes |
+| <a name="input_monitoring_account_sqs_arn"></a> [monitoring\_account\_sqs\_arn](#input\_monitoring\_account\_sqs\_arn) | ARN of the SQS queue in the monitoring account. | `string` | n/a | yes |
+| <a name="input_monitoring_account_sqs_url"></a> [monitoring\_account\_sqs\_url](#input\_monitoring\_account\_sqs\_url) | URL of the SQS queue in the monitoring account. | `string` | n/a | yes |
 | <a name="input_sns_notification_receiver_topic_arn"></a> [sns\_notification\_receiver\_topic\_arn](#input\_sns\_notification\_receiver\_topic\_arn) | ARN of the SNS topic that will receive all incoming alerts. | `string` | n/a | yes |
 | <a name="input_sqs_dlq_arn"></a> [sqs\_dlq\_arn](#input\_sqs\_dlq\_arn) | ARN of the Dead Letter Queue. | `string` | n/a | yes |
 

@@ -21,6 +21,17 @@ variable "sqs_dlq_arn" {
 }
 
 variable "kms_key_arn" {
-  description = " ARN of the KMS key."
+  description = "ARN of the KMS key."
+  type        = string
+}
+
+variable "monitoring_account_sqs_url" {
+  description = "URL of the SQS queue in the monitoring account."
+  type        = string
+}
+
+
+variable "monitoring_account_sqs_arn" {
+  description = "ARN of the SQS queue in the monitoring account."
   type        = string
 }

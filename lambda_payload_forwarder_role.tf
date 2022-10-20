@@ -7,7 +7,7 @@ module "iam_role_lambda_payload_forwarder" {
   role_path = local.lambda_payload_forwarder
 
   customer_managed_policies = {
-    "lambda_payload_forwarder_dlq_policy" : jsondecode(data.aws_iam_policy_document.sqs_dlq.json)
+    "lambda_payload_forwarder_dlq_policy" : jsondecode(data.aws_iam_policy_document.lambda_payload_forwarder_dlq_policy.json)
     "lambda_monitoring_account_sqs_access_policy" : jsondecode(data.aws_iam_policy_document.lambda_monitoring_sqs_access.json)
   }
 
