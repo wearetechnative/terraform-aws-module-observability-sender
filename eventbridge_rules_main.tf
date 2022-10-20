@@ -18,7 +18,7 @@ resource "aws_cloudwatch_event_target" "this" {
   rule           = each.value.id
   event_bus_name = each.value.event_bus_name
 
-  arn = var.sns_topic_arn
+  arn = var.sns_notification_receiver_topic_arn
 
   dead_letter_config {
     arn = var.sqs_dlq_arn
