@@ -14,8 +14,8 @@ This Terraform module implements a serverless observability stack which can opti
 
 To use this module ...
 
-```json
-{
+```hcl
+module "observability_sender" {
   source = "git@github.com:TechNative-B-V/terraform-aws-observability-sender.git?ref=v0.0.1"
 
   monitoring_account_sqs_arn = " "
