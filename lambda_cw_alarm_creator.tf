@@ -10,7 +10,7 @@ module "lambda_cw_alarm_creator" {
 
   handler     = "lambda_function.lambda_handler"
   memory_size = 128
-  timeout     = 30
+  timeout     = 60
   runtime     = "python3.9"
 
   source_type               = "local"

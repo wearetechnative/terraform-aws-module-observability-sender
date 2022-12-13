@@ -9,10 +9,11 @@ from pip import main
 def boto3_client(resource):
     config = Config(
         retries=dict(
-            max_attempts=40
+            max_attempts=3,
+            mode = 'standard'
         )
     )
-    client = boto3.client(
+    client  = boto3.client(
             resource,
             config=config
         )
@@ -288,6 +289,7 @@ def RDS_Alarms():
 def DeleteAlarms():
 
     state_reason_breach = "Threshold Crossed: no datapoints were received for 2 periods and 2 missing datapoints were treated as [Breaching]."
+    breach_reason = "Unchecked: Initial alarm creation"
     get_alarm_info = CWclient.describe_alarms()
     get_running_instances = ec2client.describe_instances(
         Filters=[{"Name": "instance-state-name", "Values": ["running"]}]
@@ -308,6 +310,6 @@ def DeleteAlarms():
                     if (
                         dimensions["Name"] == "InstanceId"
                         and dimensions["Value"] not in RunningInstances
-                        and state_reason_breach in metricalarms["StateReason"]
+                        and state_reason_breach in metricalarms["StateReason"] or breach_reason in metricalarms["StateReason"]
                     ):
                         CWclient.delete_alarms(AlarmNames=[metricalarms["AlarmName"]])
