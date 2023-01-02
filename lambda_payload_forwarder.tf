@@ -23,7 +23,7 @@ module "lambda_payload_forwarder" {
 
   environment_variables = {
     MONITORING_ACCOUNT_SQS_URL = "${var.monitoring_account_sqs_url}"
-    AWS_REGION                 = "${data.aws_region.current.name}"
+    # AWS_REGION                 = "${data.aws_region.current.name}"
   }
 
   sqs_dlq_arn = var.sqs_dlq_arn
