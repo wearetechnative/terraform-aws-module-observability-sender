@@ -8,7 +8,7 @@ This module implements ...
 
 ## How does it work
 
-This Terraform module implements a serverless observability stack which can optionally create CloudWatch alarms and forwards [EventBridge events](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-events.html) to an SQS queue.
+This Terraform module implements a serverless observability stack which by default creates CloudWatch alarms and forwards all events to an SQS queue.
 
 ## Usage
 
@@ -24,17 +24,6 @@ module "observability_sender" {
   sqs_dlq_arn = " "
   kms_key_arn = " "
   sns_notification_receiver_topic_arn = " "
-
-  eventbridge_rules = {
-    "aws-backup-notification-rule" : {
-      "description" : "Monitor state changes of aws backup service.",
-      "enabled" : true,
-      "event_pattern" : jsonencode({
-        "source" : ["aws.backup"],
-        "detail-type" : ["Backup Job State Change"]
-      })
-    }
-  }
 }
 ```
 
@@ -58,10 +47,19 @@ module "observability_sender" {
 
 | Name | Type |
 |------|------|
+| [aws_cloudwatch_event_rule.aws_backup_cloudtrail_rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
+| [aws_cloudwatch_event_rule.aws_backup_rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
+| [aws_cloudwatch_event_rule.aws_config_notification_rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
+| [aws_cloudwatch_event_rule.aws_healthdashboard_rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
+| [aws_cloudwatch_event_rule.cloudwatch_alarm_rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
+| [aws_cloudwatch_event_rule.cloudwatch_instance_termininate_rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
 | [aws_cloudwatch_event_rule.refresh_alarms](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
-| [aws_cloudwatch_event_rule.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
+| [aws_cloudwatch_event_target.aws_backup_cloudtrail_rule_target](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
+| [aws_cloudwatch_event_target.aws_backup_rule_target](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
+| [aws_cloudwatch_event_target.aws_config_notification_rule_target](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
+| [aws_cloudwatch_event_target.aws_healthdashboard_rule_target](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
+| [aws_cloudwatch_event_target.cloudwatch_alarm_rule_target](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
 | [aws_cloudwatch_event_target.lambda_target](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
-| [aws_cloudwatch_event_target.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
 | [aws_kms_grant.give_lambda_role_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_grant) | resource |
 | [aws_lambda_permission.allow_eventbridge](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_permission) | resource |
 | [aws_lambda_permission.payload_forwarder](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_permission) | resource |
@@ -82,7 +80,6 @@ module "observability_sender" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_eventbridge_rules"></a> [eventbridge\_rules](#input\_eventbridge\_rules) | EventBridge rule settings. | <pre>map(object({<br>    description : string<br>    enabled : bool<br>    event_pattern : string<br>    })<br>  )</pre> | n/a | yes |
 | <a name="input_kms_key_arn"></a> [kms\_key\_arn](#input\_kms\_key\_arn) | ARN of the KMS key. | `string` | n/a | yes |
 | <a name="input_monitoring_account_sqs_arn"></a> [monitoring\_account\_sqs\_arn](#input\_monitoring\_account\_sqs\_arn) | ARN of the SQS queue in the monitoring account. | `string` | n/a | yes |
 | <a name="input_monitoring_account_sqs_url"></a> [monitoring\_account\_sqs\_url](#input\_monitoring\_account\_sqs\_url) | URL of the SQS queue in the monitoring account. | `string` | n/a | yes |
