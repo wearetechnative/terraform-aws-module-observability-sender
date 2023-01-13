@@ -146,3 +146,40 @@ resource "aws_cloudwatch_event_target" "aws_config_notification_rule_target" {
     arn = var.sqs_dlq_arn
   }
 }
+
+resource "aws_cloudwatch_event_rule" "ssm_patch_manager_rule" {
+
+  name        = "ssm-patch-manager-notification"
+  description = "Notifies when patching via SSM patch manager fails."
+  is_enabled  = true
+
+  event_bus_name = "default"
+  event_pattern = jsonencode({
+    "detail" : {
+      "requestParameters" : {
+        "evaluations" : {
+          "complianceType" : ["NON_COMPLIANT"]
+        }
+      }
+    },
+    "detail-type" : ["AWS API Call via CloudTrail"],
+    "detail.errorCode" : [{
+      "exists" : false
+    }],
+    "detail.eventName" : ["PutEvaluations"],
+    "detail.eventSource" : ["config.amazonaws.com"],
+    "source" : ["aws.config"]
+  })
+}
+
+resource "aws_cloudwatch_event_target" "ssm_patch_manager_rule_target" {
+
+  rule           = aws_cloudwatch_event_rule.ssm_patch_manager_rule.id
+  event_bus_name = "default"
+
+  arn = var.sns_notification_receiver_topic_arn
+
+  dead_letter_config {
+    arn = var.sqs_dlq_arn
+  }
+}

@@ -44,6 +44,4 @@ Example payload
         "createdAt": "2019-11-19T19:37:00.807Z"
     }
 }
-
-
 ```
