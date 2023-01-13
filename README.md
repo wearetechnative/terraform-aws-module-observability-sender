@@ -83,6 +83,7 @@ module "observability_sender" {
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_kms_key_arn"></a> [kms\_key\_arn](#input\_kms\_key\_arn) | ARN of the KMS key. | `string` | n/a | yes |
+| <a name="input_monitoring_account_configuration"></a> [monitoring\_account\_configuration](#input\_monitoring\_account\_configuration) | Configuration settings of the monitoring account. | <pre>object({<br>    sqs_name    = string<br>    sqs_region  = string<br>    sqs_account = number<br>  })</pre> | n/a | yes |
 | <a name="input_monitoring_account_sqs_arn"></a> [monitoring\_account\_sqs\_arn](#input\_monitoring\_account\_sqs\_arn) | ARN of the SQS queue in the monitoring account. | `string` | n/a | yes |
 | <a name="input_monitoring_account_sqs_url"></a> [monitoring\_account\_sqs\_url](#input\_monitoring\_account\_sqs\_url) | URL of the SQS queue in the monitoring account. | `string` | n/a | yes |
 | <a name="input_sns_notification_receiver_topic_arn"></a> [sns\_notification\_receiver\_topic\_arn](#input\_sns\_notification\_receiver\_topic\_arn) | ARN of the SNS topic that will receive all incoming alerts. | `string` | n/a | yes |
