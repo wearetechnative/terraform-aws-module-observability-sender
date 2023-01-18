@@ -69,7 +69,7 @@ resource "aws_cloudwatch_event_rule" "cloudwatch_instance_termininate_rule" {
   })
 }
 
-resource "aws_cloudwatch_event_target" "lambda_target" {
+resource "aws_cloudwatch_event_target" "instance_terminate_lambda_target" {
   rule           = aws_cloudwatch_event_rule.cloudwatch_instance_termininate_rule.id
   event_bus_name = aws_cloudwatch_event_rule.cloudwatch_instance_termininate_rule.event_bus_name
 
@@ -80,7 +80,7 @@ resource "aws_cloudwatch_event_target" "lambda_target" {
   }
 }
 
-resource "aws_lambda_permission" "allow_eventbridge" {
+resource "aws_lambda_permission" "allow_eventbridge_instance_terminate_rule" {
   statement_id_prefix = module.lambda_cw_alarm_creator.lambda_function_name
   action              = "lambda:InvokeFunction"
   function_name       = module.lambda_cw_alarm_creator.lambda_function_name
