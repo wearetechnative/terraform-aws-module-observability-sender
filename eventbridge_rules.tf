@@ -155,20 +155,11 @@ resource "aws_cloudwatch_event_rule" "ssm_patch_manager_rule" {
 
   event_bus_name = "default"
   event_pattern = jsonencode({
+    "source" : ["aws.ssm"],
+    "detail-type" : ["EC2 Command Invocation Status-change Notification", "EC2 State Manager Instance Association State Change"],
     "detail" : {
-      "requestParameters" : {
-        "evaluations" : {
-          "complianceType" : ["NON_COMPLIANT"]
-        }
-      }
-    },
-    "detail-type" : ["AWS API Call via CloudTrail"],
-    "detail.errorCode" : [{
-      "exists" : false
-    }],
-    "detail.eventName" : ["PutEvaluations"],
-    "detail.eventSource" : ["config.amazonaws.com"],
-    "source" : ["aws.config"]
+      "status" : ["Failed", "TimedOut"]
+    }
   })
 }
 
