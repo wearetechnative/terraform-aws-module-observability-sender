@@ -7,8 +7,11 @@ module "tn_monitoring_account_alertingstack" {
 
   source = "git@github.com:TechNative-B-V/terraform-aws-observability-sender.git?ref=v0.0.1"
 
-  monitoring_account_sqs_arn = replace("arn:aws:sqs:eu-central-1:${data.aws_caller_identity.current.account_id}:sqs-opsgenie-lambda-queue-20220711145511259200000002", "/:${data.aws_caller_identity.current.account_id}:/", ":1234567890:")
-  monitoring_account_sqs_url = replace("https://sqs.eu-central-1.amazonaws.com/${data.aws_caller_identity.current.account_id}/sqs-opsgenie-lambda-queue-20220711145511259200000002", "//${data.aws_caller_identity.current.account_id}//", "/1234567890/")
+  monitoring_account_configuration = {
+        sqs_name    = "sqs_name"
+        sqs_region  = "eu-west-1"
+        sqs_account = 1234567890
+    }
 
   sqs_dlq_arn                         = module.dlq.sqs_dlq_arn
   kms_key_arn                         = module.kms.kms_key_arn
