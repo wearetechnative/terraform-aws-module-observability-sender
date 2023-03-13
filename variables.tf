@@ -1,5 +1,16 @@
 # VARIABLES
 
+variable "eventbridge_rules" {
+  description = "EventBridge rule settings."
+  type = map(object({
+    description : string
+    enabled : bool
+    event_pattern : string
+    })
+  )
+  default = {}
+}
+
 variable "sns_notification_receiver_topic_arn" {
   description = "ARN of the SNS topic that will receive all incoming alerts."
   type        = string
@@ -15,15 +26,13 @@ variable "kms_key_arn" {
   type        = string
 }
 
-variable "monitoring_account_sqs_url" {
-  description = "URL of the SQS queue in the monitoring account."
-  type        = string
-}
-
-
-variable "monitoring_account_sqs_arn" {
-  description = "ARN of the SQS queue in the monitoring account."
-  type        = string
+variable "monitoring_account_configuration" {
+  description = "SQS configuration residing in the monitoring account."
+  type = object({
+    sqs_name    = string
+    sqs_region  = string
+    sqs_account = number
+  })
 }
 
 variable "monitoring_account_configuration" {
