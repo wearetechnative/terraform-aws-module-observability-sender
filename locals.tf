@@ -28,7 +28,7 @@ locals {
       })
     },
     "terminate-cw-alarms-on-instance-termination-rule" : {
-      "description" : "Monitors for instance terminate state in order to clean up alarms..",
+      "description" : "Monitors for instance terminate state in order to clean up alarms.",
       "enabled" : true,
       "event_pattern" : jsonencode({
         "source" : ["aws.ec2"],
