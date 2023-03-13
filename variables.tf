@@ -8,6 +8,7 @@ variable "eventbridge_rules" {
     event_pattern : string
     })
   )
+  default = {}
 }
 
 variable "sns_notification_receiver_topic_arn" {
