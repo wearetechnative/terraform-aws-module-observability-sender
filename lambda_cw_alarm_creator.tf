@@ -14,7 +14,7 @@ module "lambda_cw_alarm_creator" {
   runtime     = "python3.9"
 
   source_type               = "local"
-  source_directory_location = "${path.module}/source_alarm_creator/"
+  source_directory_location = "${path.module}/alarm_creator/"
   source_file_name          = null
 
   environment_variables = {

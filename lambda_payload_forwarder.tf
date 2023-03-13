@@ -18,7 +18,7 @@ module "lambda_payload_forwarder" {
   runtime     = "python3.9"
 
   source_type               = "local"
-  source_directory_location = "${path.module}/source_payload_forwarder/"
+  source_directory_location = "${path.module}/payload_forwarder/"
   source_file_name          = null
 
   environment_variables = {
