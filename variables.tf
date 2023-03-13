@@ -27,15 +27,6 @@ variable "kms_key_arn" {
 }
 
 variable "monitoring_account_configuration" {
-  description = "SQS configuration residing in the monitoring account."
-  type = object({
-    sqs_name    = string
-    sqs_region  = string
-    sqs_account = number
-  })
-}
-
-variable "monitoring_account_configuration" {
   description = "Configuration settings of the monitoring account."
   type = object({
     sqs_name    = string
