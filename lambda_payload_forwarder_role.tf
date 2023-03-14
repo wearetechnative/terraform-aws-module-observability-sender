@@ -34,6 +34,6 @@ data "aws_iam_policy_document" "lambda_monitoring_account_sqs_access_policy" {
     effect  = "Allow"
     actions = ["sqs:*"]
 
-    resources = [var.monitoring_account_sqs_arn]
+    resources = [local.monitoring_account_sqs_arn]
   }
 }
