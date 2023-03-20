@@ -56,7 +56,7 @@ resource "aws_lambda_permission" "allow_eventbridge" {
 resource "aws_cloudwatch_event_rule" "cloudwatch_instance_termininate_rule" {
 
   name        = "terminate-cw-alarms-on-instance-termination-rule"
-  description = "Monitor state changes of CloudWatch alarms."
+  description = "Monitor state changes of EC2 instances and if true run cw_alarm creator lambda to remove stale alarms."
   is_enabled  = true
 
   event_bus_name = "default"
