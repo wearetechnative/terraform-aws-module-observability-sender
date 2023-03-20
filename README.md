@@ -73,6 +73,7 @@ module "observability_sender" {
 | [aws_lambda_permission.allow_eventbridge](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_permission) | resource |
 | [aws_lambda_permission.allow_eventbridge_instance_terminate_rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_permission) | resource |
 | [aws_lambda_permission.payload_forwarder](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_permission) | resource |
+| [aws_sns_topic.notification_receiver](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic) | resource |
 | [aws_sns_topic_policy.allow_lambda_sns_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic_policy) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_iam_policy_document.cloudwatch_alarms](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
@@ -104,4 +105,6 @@ module "observability_sender" {
 | <a name="output_lambda_cloudwatch_alarm_creator_name"></a> [lambda\_cloudwatch\_alarm\_creator\_name](#output\_lambda\_cloudwatch\_alarm\_creator\_name) | n/a |
 | <a name="output_lambda_payload_forwarder_arn"></a> [lambda\_payload\_forwarder\_arn](#output\_lambda\_payload\_forwarder\_arn) | n/a |
 | <a name="output_lambda_payload_forwarder_name"></a> [lambda\_payload\_forwarder\_name](#output\_lambda\_payload\_forwarder\_name) | n/a |
+| <a name="output_sns_topic_arn"></a> [sns\_topic\_arn](#output\_sns\_topic\_arn) | n/a |
+| <a name="output_sns_topic_id"></a> [sns\_topic\_id](#output\_sns\_topic\_id) | n/a |
 <!-- END_TF_DOCS -->

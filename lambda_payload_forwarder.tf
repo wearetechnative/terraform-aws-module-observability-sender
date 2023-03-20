@@ -33,5 +33,5 @@ resource "aws_lambda_permission" "payload_forwarder" {
   action        = "lambda:InvokeFunction"
   function_name = module.lambda_payload_forwarder.lambda_function_name
   principal     = "sns.amazonaws.com"
-  source_arn    = var.sns_notification_receiver_topic_arn
+  source_arn    = aws_sns_topic.notification_receiver.arn
 }
