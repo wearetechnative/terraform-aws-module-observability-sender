@@ -27,17 +27,6 @@ locals {
         }
       })
     },
-    "terminate-cw-alarms-on-instance-termination-rule" : {
-      "description" : "Monitors for instance terminate state in order to clean up alarms.",
-      "enabled" : true,
-      "event_pattern" : jsonencode({
-        "source" : ["aws.ec2"],
-        "detail-type" : ["EC2 Instance State-change Notification"],
-        "detail" : {
-          "state" : ["terminated", "stopped"]
-        }
-      })
-    },
     "aws-config-notification" : {
       "description" : "Notifies of AWS Config items going out compliancy.",
       "enabled" : true,
