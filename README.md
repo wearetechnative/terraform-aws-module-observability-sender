@@ -9,7 +9,12 @@ This module works in conjuction with the [Terraform AWS Observability Receiver m
 
 ## Usage
 
-To use this module ...
+There is chance when applying the module you might run into the following error;
+
+This error is the AWS API not being able to handle all the requests at once.
+You can run do one of the following if this occurs:
+1. Rerun terraform apply once more and the module should complete the creation of the rest of the resources.
+2. Run terraform apply with the following flag `-parallelism=n`.
 
 ```hcl
 module "observability_sender" {
