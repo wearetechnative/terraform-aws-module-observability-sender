@@ -51,39 +51,3 @@ resource "aws_lambda_permission" "allow_eventbridge" {
   principal           = "events.amazonaws.com"
   source_arn          = aws_cloudwatch_event_rule.refresh_alarms.arn
 }
-
-# Below rule monitor for instance changes based on an event.
-resource "aws_cloudwatch_event_rule" "cloudwatch_instance_termininate_rule" {
-
-  name        = "terminate-cw-alarms-on-instance-termination-rule"
-  description = "Monitor state changes of CloudWatch alarms."
-  is_enabled  = true
-
-  event_bus_name = "default"
-  event_pattern = jsonencode({
-    "detail" : {
-      "state" : ["terminated", "stopped"]
-    },
-    "detail-type" : ["EC2 Instance State-change Notification"],
-    "source" : ["aws.ec2"]
-  })
-}
-
-resource "aws_cloudwatch_event_target" "instance_terminate_lambda_target" {
-  rule           = aws_cloudwatch_event_rule.cloudwatch_instance_termininate_rule.id
-  event_bus_name = aws_cloudwatch_event_rule.cloudwatch_instance_termininate_rule.event_bus_name
-
-  arn = module.lambda_cw_alarm_creator.lambda_function_arn
-
-  dead_letter_config {
-    arn = var.sqs_dlq_arn
-  }
-}
-
-resource "aws_lambda_permission" "allow_eventbridge_instance_terminate_rule" {
-  statement_id_prefix = module.lambda_cw_alarm_creator.lambda_function_name
-  action              = "lambda:InvokeFunction"
-  function_name       = module.lambda_cw_alarm_creator.lambda_function_name
-  principal           = "events.amazonaws.com"
-  source_arn          = aws_cloudwatch_event_rule.cloudwatch_instance_termininate_rule.arn
-}
