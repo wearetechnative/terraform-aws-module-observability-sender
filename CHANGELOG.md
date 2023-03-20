@@ -15,6 +15,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.5]
+
+### Added
+- Module automatically creates an sns topic instead of requesting an sns topic.
+
+### Removed
+- The ability to pass an SNS topic arn via a variable.
+
 ## [0.0.4]
 
 ### Added

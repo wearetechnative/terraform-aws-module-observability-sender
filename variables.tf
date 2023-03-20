@@ -11,11 +11,6 @@ variable "eventbridge_rules" {
   default = {}
 }
 
-variable "sns_notification_receiver_topic_arn" {
-  description = "ARN of the SNS topic that will receive all incoming alerts."
-  type        = string
-}
-
 variable "sqs_dlq_arn" {
   description = "ARN of the Dead Letter Queue."
   type        = string

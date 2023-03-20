@@ -81,7 +81,7 @@ resource "aws_kms_grant" "give_lambda_role_access" {
 
 # This is a work-around until Terraform allows us to attach multiple policies to an SNS role without overwriting.
 resource "aws_sns_topic_policy" "allow_lambda_sns_access" {
-  arn    = var.sns_notification_receiver_topic_arn
+  arn    = aws_sns_topic.notification_receiver.arn
   policy = data.aws_iam_policy_document.sns_topic_policy.json
 }
 
@@ -97,7 +97,7 @@ data "aws_iam_policy_document" "sns_topic_policy" {
       identifiers = ["arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${local.lambda_cw_alarm_name}/${local.lambda_cw_alarm_name}"]
     }
 
-    resources = [var.sns_notification_receiver_topic_arn]
+    resources = [aws_sns_topic.notification_receiver.arn]
   }
 
   # Give EventBridge access to publish to SNS.
@@ -111,6 +111,6 @@ data "aws_iam_policy_document" "sns_topic_policy" {
       identifiers = ["events.amazonaws.com"]
     }
 
-    resources = [var.sns_notification_receiver_topic_arn]
+    resources = [aws_sns_topic.notification_receiver.arn]
   }
 }

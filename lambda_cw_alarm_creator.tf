@@ -18,7 +18,7 @@ module "lambda_cw_alarm_creator" {
   source_file_name          = null
 
   environment_variables = {
-    SNS_ARN = "${var.sns_notification_receiver_topic_arn}"
+    SNS_ARN = "${aws_sns_topic.notification_receiver.arn}"
   }
 
   sqs_dlq_arn = var.sqs_dlq_arn
