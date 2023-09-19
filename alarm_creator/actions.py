@@ -157,7 +157,7 @@ def Cwagent_alarms():
                             },
                             {
                                 "Name": "device",
-                                "Value": "devtmpfs",
+                                "Value": "udev",
                             },
                             {
                                 "Name": "fstype",
