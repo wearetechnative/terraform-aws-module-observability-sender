@@ -15,6 +15,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.8]
+### Changed
+ - Updated depricated eventbridge rule ``is_enabled `` argument to ``state``.
+
+## [0.0.7]
+
+### Changed
+ - Changed /dev device name to correct value.
+
+## [0.0.6]
+### Changed
+ - Added Lambda subscription to observability sns topic in sns module.
+
 ## [0.0.5]
 
 ### Added
