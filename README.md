@@ -92,7 +92,7 @@ module "observability_sender" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_eventbridge_rules"></a> [eventbridge\_rules](#input\_eventbridge\_rules) | EventBridge rule settings. | <pre>map(object({<br>    description : string<br>    enabled : bool<br>    event_pattern : string<br>    })<br>  )</pre> | `{}` | no |
+| <a name="input_eventbridge_rules"></a> [eventbridge\_rules](#input\_eventbridge\_rules) | EventBridge rule settings. | <pre>map(object({<br>    description : string<br>    enabled : string<br>    event_pattern : string<br>    })<br>  )</pre> | `{}` | no |
 | <a name="input_kms_key_arn"></a> [kms\_key\_arn](#input\_kms\_key\_arn) | ARN of the KMS key. | `string` | n/a | yes |
 | <a name="input_monitoring_account_configuration"></a> [monitoring\_account\_configuration](#input\_monitoring\_account\_configuration) | Configuration settings of the monitoring account. | <pre>object({<br>    sqs_name    = string<br>    sqs_region  = string<br>    sqs_account = number<br>  })</pre> | n/a | yes |
 | <a name="input_sqs_dlq_arn"></a> [sqs\_dlq\_arn](#input\_sqs\_dlq\_arn) | ARN of the Dead Letter Queue. | `string` | n/a | yes |
