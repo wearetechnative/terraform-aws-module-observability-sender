@@ -29,8 +29,11 @@ resource "aws_cloudwatch_event_rule" "refresh_alarms" {
   name        = "refresh-cloudwatch-alarms-rule"
   description = "Refresh CloudWatch alarms every 4 hours."
 
+  state               = "ENABLED"
   event_bus_name      = "default"
   schedule_expression = "rate(4 hours)"
+
+
 }
 
 resource "aws_cloudwatch_event_target" "lambda_target" {
