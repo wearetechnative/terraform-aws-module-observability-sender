@@ -8,7 +8,7 @@ locals {
   default_eventbridge_rules = {
     "aws-cloudwatch-alarm-notification-rule" : {
       "description" : "Monitor state changes of CloudWatch alarms.",
-      "enabled" : true,
+      "state" : "ENABLED",
       "event_pattern" : jsonencode({
         "source" : ["aws.cloudwatch"],
         "detail-type" : ["CloudWatch Alarm State Change"]
@@ -16,7 +16,7 @@ locals {
     },
     "aws-healthdashboard-notification-rule" : {
       "description" : "Monitor state AWS Health Dashboard changes.",
-      "enabled" : true,
+      "state" : "ENABLED",
       "event_pattern" : jsonencode({
         "source" : ["aws.health"],
         "detail-type" : ["AWS Health Event"],
@@ -29,7 +29,7 @@ locals {
     },
     "aws-config-notification" : {
       "description" : "Notifies of AWS Config items going out compliancy.",
-      "enabled" : true,
+      "state" : "ENABLED",
       "event_pattern" : jsonencode({
         "source" : ["aws.config"]
         "detail.eventName" : ["PutEvaluations"]
@@ -47,7 +47,7 @@ locals {
     },
     "aws-backup" : {
       "description" : "Notifies of AWS Backups failing.",
-      "enabled" : true,
+      "state" : "ENABLED",
       "event_pattern" : jsonencode({
         "source" : ["aws.backup"],
         "detail-type" : ["Backup Job State Change", "Copy Job State Change"],
@@ -58,7 +58,7 @@ locals {
     },
     "aws-backup-cloudtrail" : {
       "description" : "Notifies of AWS Backups failing through CloudTrail events.",
-      "enabled" : true,
+      "state" : "ENABLED",
       "event_pattern" : jsonencode({
         "source" : ["aws.backup"],
         "detail-type" : ["AWS Service Event via CloudTrail"],
@@ -69,7 +69,7 @@ locals {
     },
     "aws-ssm-patch-manager" : {
       "description" : "Notifies when SSM patch manager fails."
-      "enabled" : true,
+      "state" : "ENABLED",
       "event_pattern" : jsonencode({
         "source" : ["aws.ssm"],
         "detail-type" : ["EC2 Command Invocation Status-change Notification", "EC2 State Manager Instance Association State Change"],
