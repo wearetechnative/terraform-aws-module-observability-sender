@@ -4,7 +4,7 @@ variable "eventbridge_rules" {
   description = "EventBridge rule settings."
   type = map(object({
     description : string
-    enabled : string
+    state : string
     event_pattern : string
     })
   )
