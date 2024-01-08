@@ -5,7 +5,7 @@ resource "aws_cloudwatch_event_rule" "this" {
 
   name        = each.key
   description = each.value.description
-  is_enabled  = each.value.enabled
+  state       = each.value.enabled
 
   event_bus_name = "default"
   event_pattern  = each.value.event_pattern
