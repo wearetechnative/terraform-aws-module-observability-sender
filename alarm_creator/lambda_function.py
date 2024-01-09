@@ -5,7 +5,7 @@ import logging
 import traceback
 import sys
 import datetime
-from actions import Cwagent_alarms, AWS_EC2_Alarms, RDS_Alarms, DeleteAlarms
+from actions import Cwagent_alarms, AWS_EC2_Alarms, RDS_Alarms, ECS_Alarms, DeleteAlarms
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -24,6 +24,8 @@ def lambda_handler(event, context):
         AWS_EC2_Alarms()
         print("{}: RDS_Alarms()".format(datetime.datetime.now()))
         RDS_Alarms()
+        print("{}: ECS_Alarms()".format(datetime.datetime.now()))
+        ECS_Alarms()
         print("{}: DeleteAlarms()".format(datetime.datetime.now()))
         DeleteAlarms()
         print("{}: Finished()".format(datetime.datetime.now()))

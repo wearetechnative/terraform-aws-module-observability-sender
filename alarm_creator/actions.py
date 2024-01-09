@@ -7,6 +7,7 @@ CWclient = boto3.client("cloudwatch")
 ec2 = boto3.resource("ec2")
 rds = boto3.client("rds")
 ec2client = boto3.client("ec2")
+ecsclient = boto3.client("ecs")
 
 # Create alarms for Memory and disk usage received by CloudWatch Agent.
 def Cwagent_alarms():
@@ -239,6 +240,8 @@ def RDS_Alarms():
     rds_threshold = {
         "alarm_threshold": ["2", "5", "10"],
         "priority": ["P1", "P2", "P3"],
+        "alarm_threshold_swap": ["256", "200", "128"],
+        "alarm_threshold_freemem": ["200", "250", "350"],
     }
 
     response = CWclient.list_metrics(
@@ -276,7 +279,148 @@ def RDS_Alarms():
                             ],
                             Tags=[{"Key": "CreatedbyLambda", "Value": "True"}],
                         )
+        elif metrics["MetricName"] == "SwapUsage":
+            for dimensions in metrics["Dimensions"]:
+                if dimensions["Name"] == "DBInstanceIdentifier":
+                    for priority, threshold_swap in zip(
+                        rds_threshold["priority"], 
+                        rds_threshold["alarm_threshold_swap"]
+                    ):
+                        threshold_swap_bytes= int(threshold_swap) * 1000000
 
+                        # Create alarm to notify when RDS database is running high on swap usage.
+                        CWclient.put_metric_alarm(
+                            AlarmName=f"{dimensions['Value']}-SwapUsage > {threshold_swap} MB",
+                            ComparisonOperator="GreaterThanThreshold",
+                            EvaluationPeriods=2,
+                            MetricName="SwapUsage",
+                            Namespace="AWS/RDS",
+                            Period=300,
+                            Statistic="Maximum",
+                            Threshold=threshold_swap_bytes,
+                            ActionsEnabled=True,
+                            TreatMissingData="breaching",
+                            AlarmDescription=f"{priority}",
+                            Dimensions=[
+                                {
+                                    "Name": "DBInstanceIdentifier",
+                                    "Value": f"{dimensions['Value']}",
+                                },
+                            ],
+                            Tags=[{"Key": "CreatedbyLambda", "Value": "True"}],
+                        )
+
+        elif metrics["MetricName"] == "FreeableMemory":
+            for dimensions in metrics["Dimensions"]:
+                if dimensions["Name"] == "DBInstanceIdentifier":
+                    for priority, threshold_freemem in zip(
+                        rds_threshold["priority"], 
+                        rds_threshold["alarm_threshold_freemem"]
+                    ):
+                        threshold_mem_bytes= int(threshold_freemem) * 1000000
+                        
+                        # Create alarm to notify when RDS database is running low on freeable memory.
+                        CWclient.put_metric_alarm(
+                            AlarmName=f"{dimensions['Value']}-FreeableMemory < {threshold_freemem} MB",
+                            ComparisonOperator="LessThanThreshold",
+                            EvaluationPeriods=2,
+                            MetricName="FreeableMemory",
+                            Namespace="AWS/RDS",
+                            Period=300,
+                            Statistic="Maximum",
+                            Threshold=threshold_mem_bytes,
+                            ActionsEnabled=True,
+                            TreatMissingData="breaching",
+                            AlarmDescription=f"{priority}",
+                            Dimensions=[
+                                {
+                                    "Name": "DBInstanceIdentifier",
+                                    "Value": f"{dimensions['Value']}",
+                                },
+                            ],
+                            Tags=[{"Key": "CreatedbyLambda", "Value": "True"}],
+                        )
+
+def ECS_Alarms():
+
+    taskcount_threshold = {
+        "alarm_threshold": ["1", "2", "3"],
+        "priority": ["P1", "P2", "P3"],
+    }
+
+    response_insights = CWclient.list_metrics(
+        Namespace="ECS/ContainerInsights"
+        , RecentlyActive='PT3H',
+    )
+    response = CWclient.list_metrics(
+        Namespace="AWS/ECS"
+        , RecentlyActive='PT3H',
+    )
+
+    for metrics in response_insights["Metrics"]:
+        if metrics["MetricName"] == "TaskCount":
+            for dimensions in metrics["Dimensions"]:
+                if dimensions["Name"] == "ClusterName":
+                    for priority, threshold in zip(
+                        taskcount_threshold["priority"], taskcount_threshold["alarm_threshold"]
+                    ):
+                        threshold = int(threshold)
+                        # Create alarm to notify when ECS tasks number is below threshold.
+                        CWclient.put_metric_alarm(
+                            AlarmName=f"{dimensions['Value']}-TaskCount < {threshold}",
+                            ComparisonOperator="LessThanThreshold",
+                            EvaluationPeriods=2,
+                            MetricName="TaskCount",
+                            Namespace="ECS/ContainerInsights",
+                            Period=300,
+                            Statistic="Minimum",
+                            Threshold=threshold,
+                            ActionsEnabled=True,
+                            TreatMissingData="breaching",
+                            AlarmDescription=f"{priority}",
+                            Dimensions=[
+                                {
+                                    "Name": "ClusterName",
+                                    "Value": f"{dimensions['Value']}",
+                                },
+                            ],
+                            Tags=[{"Key": "CreatedbyLambda", "Value": "True"}],
+                        )
+    taskcount_threshold = {
+        "alarm_threshold": ["1"],
+        "priority": ["P1"],
+    } 
+    for metrics in response_insights["Metrics"]:
+        if metrics["MetricName"] == "CpuUtilized":
+            for dimensions in metrics["Dimensions"]:
+                if dimensions["Name"] == "ServiceName":
+                    for priority, threshold in zip(
+                        taskcount_threshold["priority"], taskcount_threshold["alarm_threshold"]
+                    ):
+                        threshold = int(threshold)
+                        # Create alarm to notify when ECS tasks number is below threshold.
+                        CWclient.put_metric_alarm(
+                            AlarmName=f"{dimensions['Value']}-TaskCount < {threshold}",
+                            ComparisonOperator="LessThanThreshold",
+                            EvaluationPeriods=2,
+                            MetricName="CpuUtilized",
+                            Namespace="ECS/ContainerInsights",
+                            Period=300,
+                            Statistic="Minimum",
+                            Threshold=threshold,
+                            ActionsEnabled=True,
+                            TreatMissingData="breaching",
+                            AlarmDescription=f"{priority}",
+                            Dimensions=[
+                                {
+                                    "Name": "ClusterName",
+                                    "Value": f"{dimensions['Value']}",
+                                },
+                            ],
+                            Tags=[{"Key": "CreatedbyLambda", "Value": "True"}],
+                        ) 
+ 
+ 
 def GetRunningInstances():
     get_running_instances = ec2client.describe_instances(
         Filters=[{"Name": "instance-state-name", "Values": ["running"]}]
