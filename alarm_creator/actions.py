@@ -434,17 +434,13 @@ def GetRunningInstances():
 
     return RunningInstances
 
-def GetRunningServices():
-    get_running_services = ecsclient.describe_services()
+def GetRunningDBInstances():
+    get_running_db_instances = rds.describe_db_instances()
+    RunningDBInstances = []
+    for db_instance in get_running_db_instances["DBInstances"]:
+        RunningDBInstances.append(db_instance["DBInstanceIdentifier"])
 
-    # instantiate empty array to store ecs services
-    RunningServices = []
-
-    # create an array with a list of service names
-    for services in get_running_services["services"]:
-        RunningServices.append(services["serviceName"])
-
-    return RunningServices
+    return RunningDBInstances
 
 def GetRunningClusters():
     get_running_clusters = ecsclient.list_clusters()
@@ -455,14 +451,39 @@ def GetRunningClusters():
 
     return RunningClusterNames
 
+def GetRunningServices():
+    clusters = GetRunningClusters()
+    RunningServiceNames = []
+    for clustername in clusters:
+        get_running_services = ecsclient.list_services(cluster = clustername)
+        RunningServices = get_running_services["serviceArns"]
+        for services in RunningServices:
+            RunningServiceNames.append(services.split('/')[2])
+
+    return RunningServiceNames
+
 def DeleteAlarms():
     get_alarm_info = CWclient.describe_alarms()
     RunningInstances = GetRunningInstances()
-
+    RunningRDSInstances = GetRunningDBInstances()
+    RunningClusters = GetRunningClusters()
+    RunningServices = GetRunningServices()
     # collect alarm metrics and compare alarm metric instanceId with instance id's in array. if the state reason is breaching and instance does not exist delete alarm.
     for metricalarm in get_alarm_info["MetricAlarms"]:
         instance_id = list(filter(lambda x: x["Name"] == "InstanceId", metricalarm["Dimensions"]))
+        rds_instance_name = list(filter(lambda x: x["Name"] == "DBInstanceIdentifier", metricalarm["Dimensions"]))
+        cluster_name = list(filter(lambda x: x["Name"] == "ClusterName", metricalarm["Dimensions"]))
+        service_name = list(filter(lambda x: x["Name"] == "ServiceName", metricalarm["Dimensions"]))
 
         if len(instance_id) == 1:
             if instance_id[0]["Value"] not in RunningInstances:
+                CWclient.delete_alarms(AlarmNames=[metricalarm["AlarmName"]])
+        if len(rds_instance_name) == 1:
+            if rds_instance_name[0]["Value"] not in RunningRDSInstances:
+                CWclient.delete_alarms(AlarmNames=[metricalarm["AlarmName"]])
+        if len(cluster_name) == 1:
+            if cluster_name[0]["Value"] not in RunningClusters:
+                CWclient.delete_alarms(AlarmNames=[metricalarm["AlarmName"]])
+        if len(service_name) == 1:
+            if service_name[0]["Value"] not in RunningServices:
                 CWclient.delete_alarms(AlarmNames=[metricalarm["AlarmName"]])
