@@ -238,7 +238,7 @@ def AWS_EC2_Alarms():
 def RDS_Alarms():
 
     rds_threshold = {
-        "alarm_threshold": ["2", "5", "10"],
+        "alarm_threshold": ["2", "3", "4"],
         "priority": ["P1", "P2", "P3"],
         "alarm_threshold_swap": ["256", "200", "128"],
         "alarm_threshold_freemem": ["200", "250", "350"],
@@ -343,8 +343,10 @@ def RDS_Alarms():
 
 def ECS_Alarms():
 
-    taskcount_threshold = {
-        "alarm_threshold": ["1", "2", "3"],
+    ecs_threshold = {
+        "taskcount_threshold": ["1"],
+        "taskcount_priority": ["P1"],
+        "cpu_threshold": ["1", "2", "3"],
         "priority": ["P1", "P2", "P3"],
     }
 
@@ -362,7 +364,7 @@ def ECS_Alarms():
             for dimensions in metrics["Dimensions"]:
                 if dimensions["Name"] == "ClusterName":
                     for priority, threshold in zip(
-                        taskcount_threshold["priority"], taskcount_threshold["alarm_threshold"]
+                        ecs_threshold["taskcount_priority"], ecs_threshold["taskcount_threshold"]
                     ):
                         threshold = int(threshold)
                         # Create alarm to notify when ECS tasks number is below threshold.
@@ -386,22 +388,18 @@ def ECS_Alarms():
                             ],
                             Tags=[{"Key": "CreatedbyLambda", "Value": "True"}],
                         )
-    taskcount_threshold = {
-        "alarm_threshold": ["1"],
-        "priority": ["P1"],
-    } 
-    for metrics in response_insights["Metrics"]:
-        if metrics["MetricName"] == "CpuUtilized":
+
+        elif metrics["MetricName"] == "CpuUtilized":
             for dimensions in metrics["Dimensions"]:
                 if dimensions["Name"] == "ServiceName":
                     for priority, threshold in zip(
-                        taskcount_threshold["priority"], taskcount_threshold["alarm_threshold"]
+                        ecs_threshold["priority"], ecs_threshold["cpu_threshold"]
                     ):
                         threshold = int(threshold)
                         # Create alarm to notify when ECS tasks number is below threshold.
                         CWclient.put_metric_alarm(
                             AlarmName=f"{dimensions['Value']}-TaskCount < {threshold}",
-                            ComparisonOperator="LessThanThreshold",
+                            ComparisonOperator="GreaterThanThreshold",
                             EvaluationPeriods=2,
                             MetricName="CpuUtilized",
                             Namespace="ECS/ContainerInsights",
@@ -435,6 +433,27 @@ def GetRunningInstances():
             RunningInstances.append(instance["InstanceId"])
 
     return RunningInstances
+
+def GetRunningServices():
+    get_running_services = ecsclient.describe_services()
+
+    # instantiate empty array to store ecs services
+    RunningServices = []
+
+    # create an array with a list of service names
+    for services in get_running_services["services"]:
+        RunningServices.append(services["serviceName"])
+
+    return RunningServices
+
+def GetRunningClusters():
+    get_running_clusters = ecsclient.list_clusters()
+    RunningClusters = get_running_clusters["clusterArns"]
+    RunningClusterNames = []
+    for clusters in RunningClusters:
+        RunningClusterNames.append(clusters.split('/')[1])
+
+    return RunningClusterNames
 
 def DeleteAlarms():
     get_alarm_info = CWclient.describe_alarms()
