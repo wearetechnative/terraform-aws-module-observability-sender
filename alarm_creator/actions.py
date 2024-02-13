@@ -238,7 +238,7 @@ def AWS_EC2_Alarms():
 def RDS_Alarms():
 
     rds_threshold = {
-        "alarm_threshold": ["2", "5", "10"],
+        "alarm_threshold": ["2", "3", "4"],
         "priority": ["P1", "P2", "P3"],
         "alarm_threshold_swap": ["256", "200", "128"],
         "alarm_threshold_freemem": ["200", "250", "350"],
@@ -343,8 +343,10 @@ def RDS_Alarms():
 
 def ECS_Alarms():
 
-    taskcount_threshold = {
-        "alarm_threshold": ["1", "2", "3"],
+    ecs_threshold = {
+        "taskcount_threshold": ["1"],
+        "taskcount_priority": ["P1"],
+        "cpu_threshold": ["1", "2", "3"],
         "priority": ["P1", "P2", "P3"],
     }
 
@@ -362,7 +364,7 @@ def ECS_Alarms():
             for dimensions in metrics["Dimensions"]:
                 if dimensions["Name"] == "ClusterName":
                     for priority, threshold in zip(
-                        taskcount_threshold["priority"], taskcount_threshold["alarm_threshold"]
+                        ecs_threshold["taskcount_priority"], ecs_threshold["taskcount_threshold"]
                     ):
                         threshold = int(threshold)
                         # Create alarm to notify when ECS tasks number is below threshold.
@@ -386,22 +388,18 @@ def ECS_Alarms():
                             ],
                             Tags=[{"Key": "CreatedbyLambda", "Value": "True"}],
                         )
-    taskcount_threshold = {
-        "alarm_threshold": ["1"],
-        "priority": ["P1"],
-    } 
-    for metrics in response_insights["Metrics"]:
-        if metrics["MetricName"] == "CpuUtilized":
+
+        elif metrics["MetricName"] == "CpuUtilized":
             for dimensions in metrics["Dimensions"]:
                 if dimensions["Name"] == "ServiceName":
                     for priority, threshold in zip(
-                        taskcount_threshold["priority"], taskcount_threshold["alarm_threshold"]
+                        ecs_threshold["priority"], ecs_threshold["cpu_threshold"]
                     ):
                         threshold = int(threshold)
                         # Create alarm to notify when ECS tasks number is below threshold.
                         CWclient.put_metric_alarm(
                             AlarmName=f"{dimensions['Value']}-TaskCount < {threshold}",
-                            ComparisonOperator="LessThanThreshold",
+                            ComparisonOperator="GreaterThanThreshold",
                             EvaluationPeriods=2,
                             MetricName="CpuUtilized",
                             Namespace="ECS/ContainerInsights",
@@ -436,14 +434,56 @@ def GetRunningInstances():
 
     return RunningInstances
 
+def GetRunningDBInstances():
+    get_running_db_instances = rds.describe_db_instances()
+    RunningDBInstances = []
+    for db_instance in get_running_db_instances["DBInstances"]:
+        RunningDBInstances.append(db_instance["DBInstanceIdentifier"])
+
+    return RunningDBInstances
+
+def GetRunningClusters():
+    get_running_clusters = ecsclient.list_clusters()
+    RunningClusters = get_running_clusters["clusterArns"]
+    RunningClusterNames = []
+    for clusters in RunningClusters:
+        RunningClusterNames.append(clusters.split('/')[1])
+
+    return RunningClusterNames
+
+def GetRunningServices():
+    clusters = GetRunningClusters()
+    RunningServiceNames = []
+    for clustername in clusters:
+        get_running_services = ecsclient.list_services(cluster = clustername)
+        RunningServices = get_running_services["serviceArns"]
+        for services in RunningServices:
+            RunningServiceNames.append(services.split('/')[2])
+
+    return RunningServiceNames
+
 def DeleteAlarms():
     get_alarm_info = CWclient.describe_alarms()
     RunningInstances = GetRunningInstances()
-
+    RunningRDSInstances = GetRunningDBInstances()
+    RunningClusters = GetRunningClusters()
+    RunningServices = GetRunningServices()
     # collect alarm metrics and compare alarm metric instanceId with instance id's in array. if the state reason is breaching and instance does not exist delete alarm.
     for metricalarm in get_alarm_info["MetricAlarms"]:
         instance_id = list(filter(lambda x: x["Name"] == "InstanceId", metricalarm["Dimensions"]))
+        rds_instance_name = list(filter(lambda x: x["Name"] == "DBInstanceIdentifier", metricalarm["Dimensions"]))
+        cluster_name = list(filter(lambda x: x["Name"] == "ClusterName", metricalarm["Dimensions"]))
+        service_name = list(filter(lambda x: x["Name"] == "ServiceName", metricalarm["Dimensions"]))
 
         if len(instance_id) == 1:
             if instance_id[0]["Value"] not in RunningInstances:
+                CWclient.delete_alarms(AlarmNames=[metricalarm["AlarmName"]])
+        if len(rds_instance_name) == 1:
+            if rds_instance_name[0]["Value"] not in RunningRDSInstances:
+                CWclient.delete_alarms(AlarmNames=[metricalarm["AlarmName"]])
+        if len(cluster_name) == 1:
+            if cluster_name[0]["Value"] not in RunningClusters:
+                CWclient.delete_alarms(AlarmNames=[metricalarm["AlarmName"]])
+        if len(service_name) == 1:
+            if service_name[0]["Value"] not in RunningServices:
                 CWclient.delete_alarms(AlarmNames=[metricalarm["AlarmName"]])
