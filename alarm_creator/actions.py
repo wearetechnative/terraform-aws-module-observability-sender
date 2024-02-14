@@ -346,8 +346,7 @@ def ECS_Alarms():
     ecs_threshold = {
         "taskcount_threshold": ["1"],
         "taskcount_priority": ["P1"],
-        "cpu_threshold": ["1", "2", "3"],
-        "priority": ["P1", "P2", "P3"],
+        
     }
 
     response_insights = CWclient.list_metrics(
@@ -389,36 +388,7 @@ def ECS_Alarms():
                             Tags=[{"Key": "CreatedbyLambda", "Value": "True"}],
                         )
 
-        elif metrics["MetricName"] == "CpuUtilized":
-            for dimensions in metrics["Dimensions"]:
-                if dimensions["Name"] == "ServiceName":
-                    for priority, threshold in zip(
-                        ecs_threshold["priority"], ecs_threshold["cpu_threshold"]
-                    ):
-                        threshold = int(threshold)
-                        # Create alarm to notify when ECS tasks number is below threshold.
-                        CWclient.put_metric_alarm(
-                            AlarmName=f"{dimensions['Value']}-TaskCount < {threshold}",
-                            ComparisonOperator="GreaterThanThreshold",
-                            EvaluationPeriods=2,
-                            MetricName="CpuUtilized",
-                            Namespace="ECS/ContainerInsights",
-                            Period=300,
-                            Statistic="Minimum",
-                            Threshold=threshold,
-                            ActionsEnabled=True,
-                            TreatMissingData="breaching",
-                            AlarmDescription=f"{priority}",
-                            Dimensions=[
-                                {
-                                    "Name": "ClusterName",
-                                    "Value": f"{dimensions['Value']}",
-                                },
-                            ],
-                            Tags=[{"Key": "CreatedbyLambda", "Value": "True"}],
-                        ) 
- 
- 
+
 def GetRunningInstances():
     get_running_instances = ec2client.describe_instances(
         Filters=[{"Name": "instance-state-name", "Values": ["running"]}]
