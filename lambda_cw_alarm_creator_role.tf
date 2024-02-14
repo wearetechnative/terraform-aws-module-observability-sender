@@ -13,6 +13,7 @@ module "iam_role_lambda_cw_alarm_creator" {
     "eventbus" : jsondecode(data.aws_iam_policy_document.eventbus.json)
     "lambda_ec2_read_access" : jsondecode(data.aws_iam_policy_document.lambda_ec2_read_access.json)
     "lambda_rds_read_access" : jsondecode(data.aws_iam_policy_document.lambda_rds_read_access.json)
+    "lambda_ecs_read_access" : jsondecode(data.aws_iam_policy_document.lambda_ecs_read_access.json)
   }
 
   trust_relationship = {
@@ -77,6 +78,16 @@ data "aws_iam_policy_document" "lambda_rds_read_access" {
     sid = "AllowLambdaRDSAccess"
 
     actions = ["rds:Describe*"]
+
+    resources = ["*"]
+  }
+}
+
+data "aws_iam_policy_document" "lambda_ecs_read_access" {
+  statement {
+    sid = "AllowLambdaECSAccess"
+
+    actions = ["ecs:List*"]
 
     resources = ["*"]
   }
