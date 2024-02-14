@@ -11,7 +11,12 @@ locals {
       "state" : "ENABLED",
       "event_pattern" : jsonencode({
         "source" : ["aws.cloudwatch"],
-        "detail-type" : ["CloudWatch Alarm State Change"]
+        "detail-type" : ["CloudWatch Alarm State Change"],
+        "detail": {
+          "configuration": {
+            "description": [ { "anything-but": "Autoscaling_alarm" } ]
+          }
+        }
       })
     },
     "aws-healthdashboard-notification-rule" : {
