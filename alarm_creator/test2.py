@@ -9,7 +9,7 @@ rds = boto3.client("rds")
 ec2client = boto3.client("ec2")
 ecsclient = boto3.client("ecs")
 
-with open('./alarms.json') as alarms_file:
+with open('/home/jeroen/tnrepo/terraform-aws-module-observability-sender/alarm_creator/alarms.json') as alarms_file:
     alarms = json.load(alarms_file)
 
 def AWS_Alarms():
@@ -18,6 +18,8 @@ def AWS_Alarms():
             instances = GetRunningInstances()
         elif service == "RDS":
             instances = GetRunningDBInstances()
+        elif service == "ECS":
+            instances = GetRunningClusters()
         for alarm in alarms[service]:
         
             response = CWclient.list_metrics(
@@ -29,22 +31,23 @@ def AWS_Alarms():
                         if dimensions["Name"] == alarms[service][alarm]['Dimensions']:
                             for priority, threshold in zip(alarms[service][alarm]['AlarmThresholds']["priority"], alarms[service][alarm]['AlarmThresholds']["alarm_threshold"]):
                                 for instance in instances:
-                                    CWclient.put_metric_alarm(
-                                        AlarmName=f"{instance}-{alarm} {alarms[service][alarm]['Operatorsymbol']} {threshold}%",
-                                        ComparisonOperator=alarms[service][alarm]['ComparisonOperator'],
-                                        EvaluationPeriods=alarms[service][alarm]['EvaluationPeriods'],
-                                        MetricName=alarms[service][alarm]['MetricName'],
-                                        Namespace=alarms[service][alarm]['Namespace'],
-                                        Period=alarms[service][alarm]['Period'],
-                                        Statistic=alarms[service][alarm]['Statistic'],
-                                        Threshold=int(threshold),
-                                        ActionsEnabled=True,
-                                        TreatMissingData=alarms[service][alarm]['TreatMissingData'],
-                                        AlarmDescription=f"{priority}",
-                                        Dimensions=[{"Name":  f"{dimensions["Name"]}", "Value": f"{dimensions['Value']}"},],
-                                        Unit=alarms[service][alarm]['Unit'],
-                                        Tags=[{"Key": "CreatedbyLambda", "Value": "True"}],
-                                    )
+                                    print(instance)
+                                    # CWclient.put_metric_alarm(
+                                    #     AlarmName=f"{instance}-{alarm} {alarms[service][alarm]['Operatorsymbol']} {threshold}%",
+                                    #     ComparisonOperator=alarms[service][alarm]['ComparisonOperator'],
+                                    #     EvaluationPeriods=alarms[service][alarm]['EvaluationPeriods'],
+                                    #     MetricName=alarms[service][alarm]['MetricName'],
+                                    #     Namespace=alarms[service][alarm]['Namespace'],
+                                    #     Period=alarms[service][alarm]['Period'],
+                                    #     Statistic=alarms[service][alarm]['Statistic'],
+                                    #     Threshold=int(threshold),
+                                    #     ActionsEnabled=True,
+                                    #     TreatMissingData=alarms[service][alarm]['TreatMissingData'],
+                                    #     AlarmDescription=f"{priority}",
+                                    #     Dimensions=[{"Name":  f"{dimensions["Name"]}", "Value": f"{dimensions['Value']}"},],
+                                    #     Unit=alarms[service][alarm]['Unit'],
+                                    #     Tags=[{"Key": "CreatedbyLambda", "Value": "True"}],
+                                    # )
 
 def GetRunningInstances():
     get_running_instances = ec2client.describe_instances(
@@ -100,4 +103,4 @@ def DeleteAlarms():
             if cluster_name[0]["Value"] not in RunningClusters:
                 CWclient.delete_alarms(AlarmNames=[metricalarm["AlarmName"]])
        
-AWS_Alarms()       
+AWS_Alarms()  
