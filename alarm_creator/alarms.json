@@ -1,0 +1,43 @@
+{
+    "EC2" : {
+        "CPUUtilization": {
+            "AlarmThresholds" : {
+                "priority": ["P1", "P2", "P3"],
+                "alarm_threshold": ["90", "80", "75"]            
+            },
+            "ComparisonOperator" : "GreaterThanThreshold",
+            "EvaluationPeriods"  : 2,
+            "MetricName" : "CPUUtilization",
+            "Namespace" : "AWS/EC2",
+            "Period"    : 300,
+            "Statistic" : "Average",
+            "TreatMissingData" : "breaching",
+            "Dimensions" : {
+                "Name": "InstanceId", 
+                "Value": "f'{instance}'"
+            },
+            "Unit" : "Percent"
+        }
+    },
+
+    "RDS" : {
+        "FreeStorageSpace": {
+            "AlarmThresholds" : {
+                "priority": ["P1", "P2", "P3"],
+                "alarm_threshold": ["2000000000", "3000000000", "4000000000"]           
+            },
+            "ComparisonOperator" : "LessThanOrEqualToThreshold",
+            "EvaluationPeriods"  : 2,
+            "MetricName" : "FreeStorageSpace",
+            "Namespace" : "AWS/RDS",
+            "Period"    : 300,
+            "Statistic" : "Minimum",
+            "TreatMissingData" : "breaching",
+            "Dimensions" : {
+                "Name": "DBInstanceIdentifier",
+                "Value": "{dimensions['Value']}"
+            }      
+        }
+    }
+    
+}
