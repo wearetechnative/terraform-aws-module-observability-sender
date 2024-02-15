@@ -6,16 +6,14 @@
                 "alarm_threshold": ["90", "80", "75"]            
             },
             "ComparisonOperator" : "GreaterThanThreshold",
+            "Operatorsymbol" : ">",
             "EvaluationPeriods"  : 2,
             "MetricName" : "CPUUtilization",
             "Namespace" : "AWS/EC2",
             "Period"    : 300,
             "Statistic" : "Average",
             "TreatMissingData" : "breaching",
-            "Dimensions" : {
-                "Name": "InstanceId", 
-                "Value": "f'{instance}'"
-            },
+            "Dimensions" : "InstanceId",
             "Unit" : "Percent"
         }
     },
@@ -27,16 +25,14 @@
                 "alarm_threshold": ["2000000000", "3000000000", "4000000000"]           
             },
             "ComparisonOperator" : "LessThanOrEqualToThreshold",
+            "Operatorsymbol" : "<=",
             "EvaluationPeriods"  : 2,
             "MetricName" : "FreeStorageSpace",
             "Namespace" : "AWS/RDS",
             "Period"    : 300,
             "Statistic" : "Minimum",
             "TreatMissingData" : "breaching",
-            "Dimensions" : {
-                "Name": "DBInstanceIdentifier",
-                "Value": "{dimensions['Value']}"
-            }, 
+            "Dimensions" : "DBInstanceIdentifier", 
             "Unit" : null     
         },
         "SwapUsage" : {
@@ -45,20 +41,18 @@
                 "alarm_threshold": ["256000000", "200000000", "128000000"]           
             },
             "ComparisonOperator" : "GreaterThanThreshold",
+            "Operatorsymbol" : ">",
             "EvaluationPeriods"  : 2,
             "MetricName" : "SwapUsage",
             "Namespace" : "AWS/RDS",
             "Period"    : 300,
             "Statistic" : "Maximum",
             "TreatMissingData" : "breaching",
-            "Dimensions" : {
-                "Name": "DBInstanceIdentifier",
-                "Value": "{dimensions['Value']}"
-            },
+            "Dimensions" : "DBInstanceIdentifier",
             "Unit" : null
         }
     },
-    
+
     "ECS" : {
         "TaskCount" : {
             "AlarmThresholds" : {
@@ -66,16 +60,14 @@
                 "alarm_threshold": ["1"]           
             },
             "ComparisonOperator" : "LessThanThreshold",
+            "Operatorsymbol" : "<",
             "EvaluationPeriods"  : 1,
             "MetricName" : "TaskCount",
             "Namespace" : "ECS/ContainerInsights",
             "Period"    : 300,
             "Statistic" : "Minimum",
             "TreatMissingData" : "breaching",
-            "Dimensions" : {
-                "Name": "ClusterName",
-                "Value": f"{dimensions['Value']}",
-            },
+            "Dimensions" : "ClusterName",
             "Unit" : null
         }
     }
