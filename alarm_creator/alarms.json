@@ -36,8 +36,48 @@
             "Dimensions" : {
                 "Name": "DBInstanceIdentifier",
                 "Value": "{dimensions['Value']}"
-            }      
+            }, 
+            "Unit" : null     
+        },
+        "SwapUsage" : {
+            "AlarmThresholds" : {
+                "priority": ["P1", "P2", "P3"],
+                "alarm_threshold": ["256000000", "200000000", "128000000"]           
+            },
+            "ComparisonOperator" : "GreaterThanThreshold",
+            "EvaluationPeriods"  : 2,
+            "MetricName" : "SwapUsage",
+            "Namespace" : "AWS/RDS",
+            "Period"    : 300,
+            "Statistic" : "Maximum",
+            "TreatMissingData" : "breaching",
+            "Dimensions" : {
+                "Name": "DBInstanceIdentifier",
+                "Value": "{dimensions['Value']}"
+            },
+            "Unit" : null
+        }
+    },
+    
+    "ECS" : {
+        "TaskCount" : {
+            "AlarmThresholds" : {
+                "priority": ["P1"],
+                "alarm_threshold": ["1"]           
+            },
+            "ComparisonOperator" : "LessThanThreshold",
+            "EvaluationPeriods"  : 1,
+            "MetricName" : "TaskCount",
+            "Namespace" : "ECS/ContainerInsights",
+            "Period"    : 300,
+            "Statistic" : "Minimum",
+            "TreatMissingData" : "breaching",
+            "Dimensions" : {
+                "Name": "ClusterName",
+                "Value": f"{dimensions['Value']}",
+            },
+            "Unit" : null
         }
     }
-    
+     
 }

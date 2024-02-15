@@ -9,7 +9,7 @@ rds = boto3.client("rds")
 ec2client = boto3.client("ec2")
 ecsclient = boto3.client("ecs")
 
-with open('/home/jeroen/tnrepo/terraform-aws-module-observability-sender/alarm_creator/alarms.json') as alarms_file:
+with open('./alarms.json') as alarms_file:
     alarms = json.load(alarms_file)
 
 #print(alarms)
@@ -22,7 +22,7 @@ def AWS_Alarms():
         for alarm in alarms[service]:
         
             response = CWclient.list_metrics(
-                Namespace=f"AWS/{service}", RecentlyActive='PT3H',
+                Namespace=f"{alarms[service][alarm]['Namespace']}", RecentlyActive='PT3H',
             )
             for metrics in response["Metrics"]:
                 if metrics["MetricName"] == alarms[service][alarm]['MetricName']:
@@ -43,7 +43,7 @@ def AWS_Alarms():
                                         TreatMissingData=alarms[service][alarm]['TreatMissingData'],
                                         AlarmDescription=f"{priority}",
                                         Dimensions=alarms[service][alarm]['Dimensions'],
-                                        Unit="Percent",
+                                        Unit=alarms[service][alarm]['Unit'],
                                         Tags=[{"Key": "CreatedbyLambda", "Value": "True"}],
                                     )
 
