@@ -86,7 +86,7 @@
             "Statistic" : "Minimum",
             "TreatMissingData" : "breaching",
             "Dimensions" : "ClusterName",
-            "Unit" : "None"
+            "Unit" : "Count"
         }
     }
      
