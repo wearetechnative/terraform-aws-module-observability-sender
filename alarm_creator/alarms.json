@@ -33,8 +33,9 @@
             "Statistic" : "Minimum",
             "TreatMissingData" : "breaching",
             "Dimensions" : "DBInstanceIdentifier", 
-            "Unit" : null     
+            "Unit" : "Gigabytes"   
         },
+        
         "SwapUsage" : {
             "AlarmThresholds" : {
                 "priority": ["P1", "P2", "P3"],
@@ -49,7 +50,24 @@
             "Statistic" : "Maximum",
             "TreatMissingData" : "breaching",
             "Dimensions" : "DBInstanceIdentifier",
-            "Unit" : null
+            "Unit" : "Megabytes"
+        },
+
+        "FreeableMemory" : {
+            "AlarmThresholds" : {
+                "priority": ["P1", "P2", "P3"],
+                "alarm_threshold": ["200000000", "250000000", "350000000"]           
+            },
+            "ComparisonOperator" : "LessThanThreshold",
+            "Operatorsymbol" : "<",
+            "EvaluationPeriods"  : 2,
+            "MetricName" : "FreeableMemory",
+            "Namespace" : "AWS/RDS",
+            "Period"    : 300,
+            "Statistic" : "Maximum",
+            "TreatMissingData" : "breaching",
+            "Dimensions" : "DBInstanceIdentifier",
+            "Unit" : "Megabytes"
         }
     },
 
@@ -68,7 +86,7 @@
             "Statistic" : "Minimum",
             "TreatMissingData" : "breaching",
             "Dimensions" : "ClusterName",
-            "Unit" : null
+            "Unit" : "None"
         }
     }
      
