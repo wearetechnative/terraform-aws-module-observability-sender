@@ -6,15 +6,17 @@
                 "alarm_threshold": ["90", "80", "75"]            
             },
             "ComparisonOperator" : "GreaterThanThreshold",
-            "Operatorsymbol" : ">",
+            "Description" : {
+                "Operatorsymbol" : ">",
+                "ThresholdUnit" : "%"
+            },
             "EvaluationPeriods"  : 2,
             "MetricName" : "CPUUtilization",
             "Namespace" : "AWS/EC2",
             "Period"    : 300,
             "Statistic" : "Average",
             "TreatMissingData" : "breaching",
-            "Dimensions" : "InstanceId",
-            "Unit" : "Percent"
+            "Dimensions" : "InstanceId"
         }
     },
 
@@ -22,52 +24,58 @@
         "FreeStorageSpace": {
             "AlarmThresholds" : {
                 "priority": ["P1", "P2", "P3"],
-                "alarm_threshold": ["2000000000", "3000000000", "4000000000"]           
+                "alarm_threshold": ["2", "3", "4"]           
             },
             "ComparisonOperator" : "LessThanOrEqualToThreshold",
-            "Operatorsymbol" : "<=",
+            "Description" : {
+                "Operatorsymbol" : "<=",
+                "ThresholdUnit" : "GB"
+            },
             "EvaluationPeriods"  : 2,
             "MetricName" : "FreeStorageSpace",
             "Namespace" : "AWS/RDS",
             "Period"    : 300,
             "Statistic" : "Minimum",
             "TreatMissingData" : "breaching",
-            "Dimensions" : "DBInstanceIdentifier", 
-            "Unit" : "Gigabytes"   
+            "Dimensions" : "DBInstanceIdentifier" 
         },
         
         "SwapUsage" : {
             "AlarmThresholds" : {
                 "priority": ["P1", "P2", "P3"],
-                "alarm_threshold": ["256000000", "200000000", "128000000"]           
+                "alarm_threshold": ["512", "400", "300"]           
             },
             "ComparisonOperator" : "GreaterThanThreshold",
-            "Operatorsymbol" : ">",
+            "Description" : {
+                "Operatorsymbol" : ">",
+                "ThresholdUnit" : "MB"
+            },
             "EvaluationPeriods"  : 2,
             "MetricName" : "SwapUsage",
             "Namespace" : "AWS/RDS",
             "Period"    : 300,
             "Statistic" : "Maximum",
             "TreatMissingData" : "breaching",
-            "Dimensions" : "DBInstanceIdentifier",
-            "Unit" : "Megabytes"
+            "Dimensions" : "DBInstanceIdentifier"
         },
 
         "FreeableMemory" : {
             "AlarmThresholds" : {
                 "priority": ["P1", "P2", "P3"],
-                "alarm_threshold": ["200000000", "250000000", "350000000"]           
+                "alarm_threshold": ["20", "50", "100"]           
             },
             "ComparisonOperator" : "LessThanThreshold",
-            "Operatorsymbol" : "<",
+            "Description" : {
+                "Operatorsymbol" : "<",
+                "ThresholdUnit" : "MB"
+            },
             "EvaluationPeriods"  : 2,
             "MetricName" : "FreeableMemory",
             "Namespace" : "AWS/RDS",
             "Period"    : 300,
             "Statistic" : "Maximum",
             "TreatMissingData" : "breaching",
-            "Dimensions" : "DBInstanceIdentifier",
-            "Unit" : "Megabytes"
+            "Dimensions" : "DBInstanceIdentifier"
         }
     },
 
@@ -78,15 +86,17 @@
                 "alarm_threshold": ["1"]           
             },
             "ComparisonOperator" : "LessThanThreshold",
-            "Operatorsymbol" : "<",
+            "Description" : {
+                "Operatorsymbol" : "<",
+                "ThresholdUnit" : "Task"
+            },
             "EvaluationPeriods"  : 1,
             "MetricName" : "TaskCount",
             "Namespace" : "ECS/ContainerInsights",
             "Period"    : 300,
             "Statistic" : "Minimum",
             "TreatMissingData" : "breaching",
-            "Dimensions" : "ClusterName",
-            "Unit" : "Count"
+            "Dimensions" : "ClusterName"
         }
     }
      

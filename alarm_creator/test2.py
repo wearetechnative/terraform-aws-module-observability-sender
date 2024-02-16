@@ -31,28 +31,27 @@ def AWS_Alarms():
                         if dimensions["Name"] == alarms[service][alarm]['Dimensions']:
                             for priority, threshold in zip(alarms[service][alarm]['AlarmThresholds']["priority"], alarms[service][alarm]['AlarmThresholds']["alarm_threshold"]):
                                 if alarms[service][alarm]['MetricName'] == "FreeStorageSpace":
-                                    thresholddescr = int(threshold) / 1000000000
+                                    threshold_bytes = int(threshold) * 1000000000
                                 elif alarms[service][alarm]['MetricName'] == "SwapUsage" or alarms[service][alarm]['MetricName'] == "FreeableMemory":
-                                    thresholddescr = int(threshold) / 1000000
+                                    threshold_bytes = int(threshold) * 1000000
                                 else:
-                                    thresholddescr = int(threshold)
+                                    threshold_bytes = int(threshold)
                                 for instance in instances:
                                     CWclient.put_metric_alarm(
-                                        AlarmName=f"{instance}-{alarm} {alarms[service][alarm]['Operatorsymbol']} {int(thresholddescr)} {alarms[service][alarm]['Unit']}", # {int(therhold) / 1000000}
+                                        AlarmName=f"{instance}-{alarm} {alarms[service][alarm]['Description']['Operatorsymbol']} {threshold} {alarms[service][alarm]['Description']['ThresholdUnit']}",
                                         ComparisonOperator=alarms[service][alarm]['ComparisonOperator'],
                                         EvaluationPeriods=alarms[service][alarm]['EvaluationPeriods'],
                                         MetricName=alarms[service][alarm]['MetricName'],
                                         Namespace=alarms[service][alarm]['Namespace'],
                                         Period=alarms[service][alarm]['Period'],
                                         Statistic=alarms[service][alarm]['Statistic'],
-                                        Threshold=int(threshold),
+                                        Threshold=int(threshold_bytes),
                                         ActionsEnabled=True,
                                         TreatMissingData=alarms[service][alarm]['TreatMissingData'],
                                         AlarmDescription=f"{priority}",
                                         Dimensions=[
                                             {"Name":  f"{dimensions['Name']}", "Value": f"{dimensions['Value']}"}
                                         ],
-                                        Unit=alarms[service][alarm]['Unit'],
                                         Tags=[{"Key": "CreatedbyLambda", "Value": "True"}],
                                     )
 
@@ -109,5 +108,3 @@ def DeleteAlarms():
         if len(cluster_name) == 1:
             if cluster_name[0]["Value"] not in RunningClusters:
                 CWclient.delete_alarms(AlarmNames=[metricalarm["AlarmName"]])
-       
-AWS_Alarms()  
