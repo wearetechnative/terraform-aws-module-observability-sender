@@ -10,7 +10,7 @@ ec2client = boto3.client("ec2")
 ecsclient = boto3.client("ecs")
 
 # Load json file containing the alarms
-with open('/home/jeroen/tnrepo/terraform-aws-module-observability-sender/alarm_creator/alarms.json') as alarms_file:
+with open('./alarms.json') as alarms_file:
     alarms = json.load(alarms_file)
 
 # Alarm creator
