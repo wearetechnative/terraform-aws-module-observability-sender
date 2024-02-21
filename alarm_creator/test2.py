@@ -9,11 +9,14 @@ rds = boto3.client("rds")
 ec2client = boto3.client("ec2")
 ecsclient = boto3.client("ecs")
 
-with open('./alarms.json') as alarms_file:
+# Load json file containing the alarms
+with open('/home/jeroen/tnrepo/terraform-aws-module-observability-sender/alarm_creator/alarms.json') as alarms_file:
     alarms = json.load(alarms_file)
 
+# Alarm creator
 def AWS_Alarms():
     for service in alarms:
+        # Fill instances variable with Running instances per service
         if service == "EC2":
             instances = GetRunningInstances()
         elif service == "RDS":
@@ -21,21 +24,19 @@ def AWS_Alarms():
         elif service == "ECS":
             instances = GetRunningClusters()
         for alarm in alarms[service]:
-        
-            response = CWclient.list_metrics(
-                Namespace=f"{alarms[service][alarm]['Namespace']}", RecentlyActive='PT3H',
-            )
+            # Query the namespaces in CloudWatch Metrics
+            response = CWclient.list_metrics(Namespace=f"{alarms[service][alarm]['Namespace']}", RecentlyActive='PT3H',)
             for metrics in response["Metrics"]:
                 if metrics["MetricName"] == alarms[service][alarm]['MetricName']:
                     for dimensions in metrics["Dimensions"]:
                         if dimensions["Name"] == alarms[service][alarm]['Dimensions']:
                             for priority, threshold in zip(alarms[service][alarm]['AlarmThresholds']["priority"], alarms[service][alarm]['AlarmThresholds']["alarm_threshold"]):
                                 if alarms[service][alarm]['MetricName'] == "FreeStorageSpace":
-                                    threshold_bytes = int(threshold) * 1000000000
+                                    cw_threshold = int(threshold) * 1000000000
                                 elif alarms[service][alarm]['MetricName'] == "SwapUsage" or alarms[service][alarm]['MetricName'] == "FreeableMemory":
-                                    threshold_bytes = int(threshold) * 1000000
+                                    cw_threshold = int(threshold) * 1000000
                                 else:
-                                    threshold_bytes = int(threshold)
+                                    cw_threshold = int(threshold)
                                 for instance in instances:
                                     CWclient.put_metric_alarm(
                                         AlarmName=f"{instance}-{alarm} {alarms[service][alarm]['Description']['Operatorsymbol']} {threshold} {alarms[service][alarm]['Description']['ThresholdUnit']}",
@@ -45,7 +46,7 @@ def AWS_Alarms():
                                         Namespace=alarms[service][alarm]['Namespace'],
                                         Period=alarms[service][alarm]['Period'],
                                         Statistic=alarms[service][alarm]['Statistic'],
-                                        Threshold=int(threshold_bytes),
+                                        Threshold=cw_threshold,
                                         ActionsEnabled=True,
                                         TreatMissingData=alarms[service][alarm]['TreatMissingData'],
                                         AlarmDescription=f"{priority}",
