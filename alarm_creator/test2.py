@@ -16,6 +16,7 @@ with open('./alarms.json') as alarms_file:
 # Alarm creator
 def AWS_Alarms():
     for service in alarms:
+
         # Fill instances variable with Running instances per service
         if service == "EC2":
             instances = GetRunningInstances()
@@ -24,13 +25,18 @@ def AWS_Alarms():
         elif service == "ECS":
             instances = GetRunningClusters()
         for alarm in alarms[service]:
+
             # Query the namespaces in CloudWatch Metrics
             response = CWclient.list_metrics(Namespace=f"{alarms[service][alarm]['Namespace']}", RecentlyActive='PT3H',)
             for metrics in response["Metrics"]:
+
+                # Check if any of the found metricnames are equal to metric names in alarms file 
                 if metrics["MetricName"] == alarms[service][alarm]['MetricName']:
                     for dimensions in metrics["Dimensions"]:
                         if dimensions["Name"] == alarms[service][alarm]['Dimensions']:
                             for priority, threshold in zip(alarms[service][alarm]['AlarmThresholds']["priority"], alarms[service][alarm]['AlarmThresholds']["alarm_threshold"]):
+
+                                # To make alarmnames pretty, 'MB/GB' is used instead of 1000000/1000000000 bytes, needs to be in bytes for actual threshold
                                 if alarms[service][alarm]['MetricName'] == "FreeStorageSpace":
                                     cw_threshold = int(threshold) * 1000000000
                                 elif alarms[service][alarm]['MetricName'] == "SwapUsage" or alarms[service][alarm]['MetricName'] == "FreeableMemory":
@@ -38,6 +44,8 @@ def AWS_Alarms():
                                 else:
                                     cw_threshold = int(threshold)
                                 for instance in instances:
+
+                                    # Create alarms
                                     CWclient.put_metric_alarm(
                                         AlarmName=f"{instance}-{alarm} {alarms[service][alarm]['Description']['Operatorsymbol']} {threshold} {alarms[service][alarm]['Description']['ThresholdUnit']}",
                                         ComparisonOperator=alarms[service][alarm]['ComparisonOperator'],
