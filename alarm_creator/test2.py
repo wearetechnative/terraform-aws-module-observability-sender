@@ -43,6 +43,20 @@ def AWS_Alarms():
                                     cw_threshold = int(threshold) * 1000000
                                 else:
                                     cw_threshold = int(threshold)
+                                
+                                instanceDimensions = {
+                                                "Name":  f"{dimensions['Name']}", 
+                                                "Value": f"{dimensions['Value']}"
+                                            }
+                                dimensionlist = []
+                                try:
+                                    for item in alarms[service][alarm]['DiskDimensions']:
+                                        dimensionlist.append(alarms[service][alarm]['DiskDimensions'][item])
+                                except KeyError:
+                                    dimensionlist = []
+                                
+                                dimensionlist.append(instanceDimensions)
+                                                                
                                 for instance in instances:
 
                                     # Create alarms
@@ -58,9 +72,7 @@ def AWS_Alarms():
                                         ActionsEnabled=True,
                                         TreatMissingData=alarms[service][alarm]['TreatMissingData'],
                                         AlarmDescription=f"{priority}",
-                                        Dimensions=[
-                                            {"Name":  f"{dimensions['Name']}", "Value": f"{dimensions['Value']}"}
-                                        ],
+                                        Dimensions=dimensionlist,
                                         Tags=[{"Key": "CreatedbyLambda", "Value": "True"}],
                                     )
 
@@ -111,9 +123,10 @@ def DeleteAlarms():
         if len(instance_id) == 1:
             if instance_id[0]["Value"] not in RunningInstances:
                 CWclient.delete_alarms(AlarmNames=[metricalarm["AlarmName"]])
-        if len(rds_instance_name) == 1:
+        elif len(rds_instance_name) == 1:
             if rds_instance_name[0]["Value"] not in RunningRDSInstances:
                 CWclient.delete_alarms(AlarmNames=[metricalarm["AlarmName"]])
-        if len(cluster_name) == 1:
+        elif len(cluster_name) == 1:
             if cluster_name[0]["Value"] not in RunningClusters:
                 CWclient.delete_alarms(AlarmNames=[metricalarm["AlarmName"]])
+AWS_Alarms()

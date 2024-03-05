@@ -16,9 +16,81 @@
             "Period"    : 300,
             "Statistic" : "Average",
             "TreatMissingData" : "breaching",
-            "Dimensions" : "InstanceId"
+            "Dimensions" : "InstanceId",
+            "DiskDimensions": {
+                "Path": {
+                    "Name": "path",
+                    "Value": "/"
+                },
+                "Device": {
+                    "Name": "device",
+                    "Value": "nvme0n1p1"
+                },
+                "FSType": { 
+                    "Name": "fstype",
+                    "Value": "ext4"
+                }
+            }
         }
     },
+
+    "CWAgent" : {   
+        "mem_used_percent": {
+            "AlarmThresholds" : {
+                "priority": ["P1", "P2", "P3"],
+                "alarm_threshold": ["90", "80", "75"] 
+            },
+            "ComparisonOperator" : "GreaterThanThreshold",
+            "Description" : {
+                "Operatorsymbol" : ">",
+                "ThresholdUnit" : "%" 
+            },
+            "EvaluationPeriods" : 2,
+            "MetricName" : "mem_used_percent",
+            "Namespace" : "CWAgent",
+            "Period" : 300,
+            "Statistic" : "Average",
+            "TreatMissingData" : "breaching",
+            "Dimensions" : "InstanceId"
+        },
+
+        "disk_used_percent": {
+            "AlarmThresholds" : {
+                "priority": ["P1", "P2", "P3"],
+                "alarm_threshold": ["90", "80", "75"] 
+            },
+            "ComparisonOperator" : "GreaterThanThreshold",
+            "Description" : {
+                "Operatorsymbol" : ">",
+                "ThresholdUnit" : "%" 
+            },
+            "EvaluationPeriods" : 2,
+            "MetricName" : "disk_used_percent",
+            "Namespace" : "CWAgent",
+            "Period" : 300,
+            "Statistic" : "Average",
+            "TreatMissingData" : "breaching",
+            "Dimensions" : "InstanceId",
+            "DiskDimensions": {
+                "Path": {
+                    "Name": "path",
+                    "Value": "/"
+                },
+                "Device": {
+                    "Name": "device",
+                    "Value": "nvme0n1p1"
+                },
+                "FSType": { 
+                    "Name": "fstype",
+                    "Value": "ext4"
+                }
+            }
+            
+        
+                      
+        }
+    },
+   
 
     "RDS" : {
         "FreeStorageSpace": {
