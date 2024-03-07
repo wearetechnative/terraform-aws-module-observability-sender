@@ -1,0 +1,224 @@
+{
+    "EC2" : {
+        "CPUUtilization": {
+            "AlarmThresholds" : {
+                "priority": ["P1", "P2", "P3"],
+                "alarm_threshold": ["90", "80", "75"]            
+            },
+            "ComparisonOperator" : "GreaterThanThreshold",
+            "Description" : {
+                "Operatorsymbol" : ">",
+                "ThresholdUnit" : "%"
+            },
+            "EvaluationPeriods"  : 2,
+            "MetricName" : "CPUUtilization",
+            "Namespace" : "AWS/EC2",
+            "Period"    : 300,
+            "Statistic" : "Average",
+            "TreatMissingData" : "breaching",
+            "Dimensions" : "InstanceId"
+        }
+    },
+
+    "CWAgent" : {   
+        "mem_used_percent": {
+            "AlarmThresholds" : {
+                "priority": ["P1", "P2", "P3"],
+                "alarm_threshold": ["90", "80", "75"] 
+            },
+            "ComparisonOperator" : "GreaterThanThreshold",
+            "Description" : {
+                "Operatorsymbol" : ">",
+                "ThresholdUnit" : "%" 
+            },
+            "EvaluationPeriods" : 2,
+            "MetricName" : "mem_used_percent",
+            "Namespace" : "CWAgent",
+            "Period" : 300,
+            "Statistic" : "Average",
+            "TreatMissingData" : "breaching",
+            "Dimensions" : "InstanceId"
+        },
+
+        "disk_used_percent_root": {
+            "AlarmThresholds" : {
+                "priority": ["P1", "P2", "P3"],
+                "alarm_threshold": ["90", "80", "75"] 
+            },
+            "ComparisonOperator" : "GreaterThanThreshold",
+            "Description" : {
+                "Operatorsymbol" : ">",
+                "ThresholdUnit" : "%" 
+            },
+            "EvaluationPeriods" : 2,
+            "MetricName" : "disk_used_percent",
+            "Namespace" : "CWAgent",
+            "Period" : 300,
+            "Statistic" : "Average",
+            "TreatMissingData" : "breaching",
+            "Dimensions" : "InstanceId",
+            "DiskDimensions": [
+                {
+                    "Name": "path",
+                    "Value": "/"
+                },
+                {
+                    "Name": "device",
+                    "Value": "nvme0n1p1"
+                },
+                { 
+                    "Name": "fstype",
+                    "Value": "ext4"
+                }
+            ]
+        },
+
+        "disk_used_percent_sys_fs": {
+            "AlarmThresholds" : {
+                "priority": ["P1", "P2", "P3"],
+                "alarm_threshold": ["90", "80", "75"] 
+            },
+            "ComparisonOperator" : "GreaterThanThreshold",
+            "Description" : {
+                "Operatorsymbol" : ">",
+                "ThresholdUnit" : "%" 
+            },
+            "EvaluationPeriods" : 2,
+            "MetricName" : "disk_used_percent",
+            "Namespace" : "CWAgent",
+            "Period" : 300,
+            "Statistic" : "Average",
+            "TreatMissingData" : "breaching",
+            "Dimensions" : "InstanceId",
+            "DiskDimensions": [
+                {
+                    "Name": "path",
+                    "Value": "/sys/fs/cgroup"
+                },
+                {
+                    "Name": "device",
+                    "Value": "tmpfs"
+                },
+                {
+                    "Name": "fstype",
+                    "Value": "tmpfs"
+                }
+            ]
+        },
+
+        "disk_used_percent_dev": {
+            "AlarmThresholds" : {
+                "priority": ["P1", "P2", "P3"],
+                "alarm_threshold": ["90", "80", "75"] 
+            },
+            "ComparisonOperator" : "GreaterThanThreshold",
+            "Description" : {
+                "Operatorsymbol" : ">",
+                "ThresholdUnit" : "%" 
+            },
+            "EvaluationPeriods" : 2,
+            "MetricName" : "disk_used_percent",
+            "Namespace" : "CWAgent",
+            "Period" : 300,
+            "Statistic" : "Average",
+            "TreatMissingData" : "breaching",
+            "Dimensions" : "InstanceId",
+            "DiskDimensions": [
+                {
+                    "Name": "path",
+                    "Value": "/dev"
+                },
+                {
+                    "Name": "device",
+                    "Value": "udev"
+                },
+                {
+                    "Name": "fstype",
+                    "Value": "devtmpfs"
+                }
+            ]
+        }
+    },
+   
+
+    "RDS" : {
+        "FreeStorageSpace": {
+            "AlarmThresholds" : {
+                "priority": ["P1", "P2", "P3"],
+                "alarm_threshold": ["2", "3", "4"]           
+            },
+            "ComparisonOperator" : "LessThanOrEqualToThreshold",
+            "Description" : {
+                "Operatorsymbol" : "<=",
+                "ThresholdUnit" : "GB"
+            },
+            "EvaluationPeriods"  : 2,
+            "MetricName" : "FreeStorageSpace",
+            "Namespace" : "AWS/RDS",
+            "Period"    : 300,
+            "Statistic" : "Minimum",
+            "TreatMissingData" : "breaching",
+            "Dimensions" : "DBInstanceIdentifier" 
+        },
+        
+        "SwapUsage" : {
+            "AlarmThresholds" : {
+                "priority": ["P1", "P2", "P3"],
+                "alarm_threshold": ["512", "400", "300"]           
+            },
+            "ComparisonOperator" : "GreaterThanThreshold",
+            "Description" : {
+                "Operatorsymbol" : ">",
+                "ThresholdUnit" : "MB"
+            },
+            "EvaluationPeriods"  : 2,
+            "MetricName" : "SwapUsage",
+            "Namespace" : "AWS/RDS",
+            "Period"    : 300,
+            "Statistic" : "Maximum",
+            "TreatMissingData" : "breaching",
+            "Dimensions" : "DBInstanceIdentifier"
+        },
+
+        "FreeableMemory" : {
+            "AlarmThresholds" : {
+                "priority": ["P1", "P2", "P3"],
+                "alarm_threshold": ["20", "50", "100"]           
+            },
+            "ComparisonOperator" : "LessThanThreshold",
+            "Description" : {
+                "Operatorsymbol" : "<",
+                "ThresholdUnit" : "MB"
+            },
+            "EvaluationPeriods"  : 2,
+            "MetricName" : "FreeableMemory",
+            "Namespace" : "AWS/RDS",
+            "Period"    : 300,
+            "Statistic" : "Maximum",
+            "TreatMissingData" : "breaching",
+            "Dimensions" : "DBInstanceIdentifier"
+        }
+    },
+
+    "ECS" : {
+        "TaskCount" : {
+            "AlarmThresholds" : {
+                "priority": ["P1"],
+                "alarm_threshold": ["1"]           
+            },
+            "ComparisonOperator" : "LessThanThreshold",
+            "Description" : {
+                "Operatorsymbol" : "<",
+                "ThresholdUnit" : "Task"
+            },
+            "EvaluationPeriods"  : 1,
+            "MetricName" : "TaskCount",
+            "Namespace" : "ECS/ContainerInsights",
+            "Period"    : 300,
+            "Statistic" : "Minimum",
+            "TreatMissingData" : "breaching",
+            "Dimensions" : "ClusterName"
+        }
+    }
+     
+}

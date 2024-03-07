@@ -9,6 +9,34 @@ This module works in conjuction with the [Terraform AWS Observability Receiver m
 
 ## Usage
 
+# alarms.json structure
+
+The file contains the alarms per service.
+In the example below you see the EC2 service that contains the CPU Utilization alarm. This will create the CPU Utilization alarm for every EC2 instance.
+```
+"EC2" : {                                                     <- Service
+        "CPUUtilization": {                                   <- Alarmname 
+            "AlarmThresholds" : {                            
+                "priority": ["P1", "P2", "P3"],               <- for every priority there needs to be a threshold and vice versa
+                "alarm_threshold": ["90", "80", "75"]            
+            },
+            "ComparisonOperator" : "GreaterThanThreshold",
+            "Description" : {                                 <- Description is used for naming the alarm in cloudwatch
+                "Operatorsymbol" : ">",
+                "ThresholdUnit" : "%"
+            },
+            "EvaluationPeriods"  : 2,
+            "MetricName" : "CPUUtilization",
+            "Namespace" : "AWS/EC2",
+            "Period"    : 300,
+            "Statistic" : "Average",
+            "TreatMissingData" : "breaching",
+            "Dimensions" : "InstanceId"
+        }
+    },
+```
+
+
 There is chance when applying the module you might run into the following error;
 
 This error is the AWS API not being able to handle all the requests at once.
