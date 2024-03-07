@@ -37,9 +37,9 @@ def AWS_Alarms():
                             for priority, threshold in zip(alarms[service][alarm]['AlarmThresholds']["priority"], alarms[service][alarm]['AlarmThresholds']["alarm_threshold"]):
 
                                 # To make alarmnames pretty, 'MB/GB' is used instead of 1000000/1000000000 bytes, needs to be in bytes for actual threshold
-                                if alarms[service][alarm]['MetricName'] == "FreeStorageSpace":
+                                if alarms[service][alarm]['Description']['ThresholdUnit'] == "GB":
                                     cw_threshold = int(threshold) * 1000000000
-                                elif alarms[service][alarm]['MetricName'] == "SwapUsage" or alarms[service][alarm]['MetricName'] == "FreeableMemory":
+                                elif alarms[service][alarm]['Description']['ThresholdUnit'] == "MB":
                                     cw_threshold = int(threshold) * 1000000
                                 else:
                                     cw_threshold = int(threshold)
