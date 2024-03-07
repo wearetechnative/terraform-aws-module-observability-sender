@@ -56,7 +56,7 @@ def AWS_Alarms():
                                         dimensionlist.append(item)
                                 except KeyError:    #
                                     dimensionlist = []
-                                dimensionlist.append(instanceDimensions)
+                                dimensionlist.insert(0, instanceDimensions)
                                                                                                
                                 for instance in instances:
 
