@@ -15,9 +15,9 @@ ecsclient = boto3.client("ecs")
 # Create Lambda layer create if statement to choose which one depending on which variable is enabled.
 
 
-# Load json file containing the alarms, checks if it needs to use a custom alarms json or defaul json.
+# Load json file containing the alarms, checks if it needs to use a custom alarms json or default json.
 if custom_alert_action == "true":
-    with open('./custom_alarms.json') as alarms_file:
+    with open('/opt/custom_alarms.json') as alarms_file:
         alarms = json.load(alarms_file)
 else:
     with open('./alarms.json') as alarms_file:
