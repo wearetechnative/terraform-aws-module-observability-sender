@@ -85,7 +85,7 @@ module "observability_sender" {
 |------|--------|---------|
 | <a name="module_iam_role_lambda_cw_alarm_creator"></a> [iam\_role\_lambda\_cw\_alarm\_creator](#module\_iam\_role\_lambda\_cw\_alarm\_creator) | git@github.com:TechNative-B-V/modules-aws.git//identity_and_access_management/iam_role | v1.1.7 |
 | <a name="module_iam_role_lambda_payload_forwarder"></a> [iam\_role\_lambda\_payload\_forwarder](#module\_iam\_role\_lambda\_payload\_forwarder) | git@github.com:TechNative-B-V/modules-aws.git//identity_and_access_management/iam_role | v1.1.7 |
-| <a name="module_lambda_cw_alarm_creator"></a> [lambda\_cw\_alarm\_creator](#module\_lambda\_cw\_alarm\_creator) | git@github.com:TechNative-B-V/modules-aws.git//lambda | v1.1.7 |
+| <a name="module_lambda_cw_alarm_creator"></a> [lambda\_cw\_alarm\_creator](#module\_lambda\_cw\_alarm\_creator) | git@github.com:wearetechnative/terraform-aws-lambda.git | 13eda5f9e8ae40e51f66a45837cd41a6b35af988 |
 | <a name="module_lambda_payload_forwarder"></a> [lambda\_payload\_forwarder](#module\_lambda\_payload\_forwarder) | git@github.com:TechNative-B-V/modules-aws.git//lambda | v1.1.7 |
 
 ## Resources
