@@ -18,10 +18,26 @@ module "lambda_cw_alarm_creator" {
   source_file_name          = null
 
   environment_variables = {
-    SNS_ARN = "${aws_sns_topic.notification_receiver.arn}"
+    SNS_ARN             = "${aws_sns_topic.notification_receiver.arn}"
+    CUSTOM_ALERT_ACTION = var.source_directory_location != null ? true : false
   }
 
   sqs_dlq_arn = var.sqs_dlq_arn
+}
+
+# Create Lambda layer to host custom actions.py
+
+resource "aws_lambda_layer_version" "custom_actions" {
+  count = var.source_directory_location != null ? 1 : 0
+
+  layer_name   = "alarm_creator_custom_alert_actions"
+  descriptions = "Contains a customer specific actions.py used for the alarm_creator"
+
+  filename = data.archive_file.custom_action[0].output_path
+
+  source_code_hash = data.archive_file.custom_action[0].output_base64sha256
+
+  compatible_runtimes = ["python3.9"]
 }
 
 # Cron job event rule directly tied to lambda function.

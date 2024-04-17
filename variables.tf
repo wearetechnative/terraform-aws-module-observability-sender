@@ -29,3 +29,9 @@ variable "monitoring_account_configuration" {
     sqs_account = number
   })
 }
+
+variable "source_directory_location" {
+  description = "Source Directory location for the custom alarm creator actions.py."
+  type        = string
+  default     = null
+}

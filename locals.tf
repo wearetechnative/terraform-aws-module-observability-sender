@@ -12,9 +12,9 @@ locals {
       "event_pattern" : jsonencode({
         "source" : ["aws.cloudwatch"],
         "detail-type" : ["CloudWatch Alarm State Change"],
-        "detail": {
-          "configuration": {
-            "description": [ { "anything-but": "Autoscaling_alarm" } ]
+        "detail" : {
+          "configuration" : {
+            "description" : [{ "anything-but" : "Autoscaling_alarm" }]
           }
         }
       })
