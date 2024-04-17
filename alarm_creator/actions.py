@@ -1,6 +1,9 @@
-import boto3, json
+import boto3, json, subprocess
 
 from pip import main
+
+# environment_variables
+custom_alert_action  = os.environ['CUSTOM_ALERT_ACTION']
 
 # Create boto3 clients
 CWclient = boto3.client("cloudwatch")
@@ -9,9 +12,16 @@ rds = boto3.client("rds")
 ec2client = boto3.client("ec2")
 ecsclient = boto3.client("ecs")
 
-# Load json file containing the alarms
-with open('./alarms.json') as alarms_file:
-    alarms = json.load(alarms_file)
+# Create Lambda layer create if statement to choose which one depending on which variable is enabled.
+
+
+# Load json file containing the alarms, checks if it needs to use a custom alarms json or defaul json.
+if custom_alert_action == True:
+    with open('./custom_alarms.json') as alarms_file:
+        alarms = json.load(alarms_file)
+else:
+    with open('./alarms.json') as alarms_file:
+        alarms = json.load(alarms_file)
 
 # Alarm creator
 def AWS_Alarms():
@@ -30,7 +40,7 @@ def AWS_Alarms():
             response = CWclient.list_metrics(Namespace=f"{alarms[service][alarm]['Namespace']}", RecentlyActive='PT3H',)
             for metrics in response["Metrics"]:
 
-                # Check if any of the found metricnames are equal to metric names in alarms file 
+                # Check if any of the found metricnames are equal to metric names in alarms file
                 if metrics["MetricName"] == alarms[service][alarm]['MetricName']:
                     for dimensions in metrics["Dimensions"]:
                         if dimensions["Name"] == alarms[service][alarm]['Dimensions']:
@@ -43,21 +53,21 @@ def AWS_Alarms():
                                     cw_threshold = int(threshold) * 1000000
                                 else:
                                     cw_threshold = int(threshold)
-                                
+
                                 # Handling dimensions
                                 instanceDimensions = {
-                                                "Name":  f"{dimensions['Name']}", 
+                                                "Name":  f"{dimensions['Name']}",
                                                 "Value": f"{dimensions['Value']}"
                                             }
                                 dimensionlist = []
-                                # For disk alarms there are more dimensions than other alarms 
-                                try:                
+                                # For disk alarms there are more dimensions than other alarms
+                                try:
                                     for item in alarms[service][alarm]['DiskDimensions']:
                                         dimensionlist.append(item)
                                 except KeyError:    #
                                     dimensionlist = []
                                 dimensionlist.insert(0, instanceDimensions)
-                                                                                               
+
                                 for instance in instances:
 
                                     # Create alarms
@@ -114,13 +124,13 @@ def DeleteAlarms():
     RunningInstances = GetRunningInstances()
     RunningRDSInstances = GetRunningDBInstances()
     RunningClusters = GetRunningClusters()
-    
+
     # collect alarm metrics and compare alarm metric instanceId with instance id's in array. if the state reason is breaching and instance does not exist delete alarm.
     for metricalarm in get_alarm_info["MetricAlarms"]:
         instance_id = list(filter(lambda x: x["Name"] == "InstanceId", metricalarm["Dimensions"]))
         rds_instance_name = list(filter(lambda x: x["Name"] == "DBInstanceIdentifier", metricalarm["Dimensions"]))
         cluster_name = list(filter(lambda x: x["Name"] == "ClusterName", metricalarm["Dimensions"]))
-        
+
         if len(instance_id) == 1:
             if instance_id[0]["Value"] not in RunningInstances:
                 CWclient.delete_alarms(AlarmNames=[metricalarm["AlarmName"]])
