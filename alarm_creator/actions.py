@@ -1,4 +1,4 @@
-import boto3, json, subprocess
+import boto3, json, subprocess, os
 
 from pip import main
 
