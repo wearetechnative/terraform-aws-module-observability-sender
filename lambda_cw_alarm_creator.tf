@@ -17,6 +17,8 @@ module "lambda_cw_alarm_creator" {
   source_directory_location = "${path.module}/alarm_creator/"
   source_file_name          = null
 
+  layers = var.source_directory_location != null ? [aws_lambda_layer_version.arn] : null
+
   environment_variables = {
     SNS_ARN             = "${aws_sns_topic.notification_receiver.arn}"
     CUSTOM_ALERT_ACTION = var.source_directory_location != null ? true : false
