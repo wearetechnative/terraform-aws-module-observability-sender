@@ -16,7 +16,7 @@ ecsclient = boto3.client("ecs")
 
 
 # Load json file containing the alarms, checks if it needs to use a custom alarms json or defaul json.
-if custom_alert_action == True:
+if custom_alert_action == "true":
     with open('./custom_alarms.json') as alarms_file:
         alarms = json.load(alarms_file)
 else:
