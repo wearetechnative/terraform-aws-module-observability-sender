@@ -57,7 +57,7 @@ locals {
         "source" : ["aws.backup"],
         "detail-type" : ["Backup Job State Change", "Copy Job State Change"],
         "detail" : {
-          "state" : [{ "anything-but" : ["RUNNING", "COMPLETED", "CREATED"] }]
+          "state" : [{ "anything-but" : ["RUNNING", "COMPLETED", "CREATED", "PENDING"] }]
         }
       })
     },
