@@ -11,6 +11,7 @@ ec2 = boto3.resource("ec2")
 rds = boto3.client("rds")
 ec2client = boto3.client("ec2")
 ecsclient = boto3.client("ecs")
+elasticlient = boto3.client("elasticache")
 
 # Create Lambda layer create if statement to choose which one depending on which variable is enabled.
 
@@ -34,58 +35,57 @@ def AWS_Alarms():
             instances = GetRunningDBInstances()
         elif service == "ECS":
             instances = GetRunningClusters()
+        elif service == "ElastiCache":
+            instances = GetRunningCacheClusters()
+        elif service == "CWAgent":
+            instances = GetRunningInstances()
+
         for alarm in alarms[service]:
-
             # Query the namespaces in CloudWatch Metrics
-            response = CWclient.list_metrics(Namespace=f"{alarms[service][alarm]['Namespace']}", RecentlyActive='PT3H',)
+            response = CWclient.list_metrics(Namespace=f"{alarms[service][alarm]['Namespace']}", RecentlyActive='PT3H')
             for metrics in response["Metrics"]:
-
-                # Check if any of the found metricnames are equal to metric names in alarms file
+                # Check if any of the found metric names are equal to metric names in alarms file
                 if metrics["MetricName"] == alarms[service][alarm]['MetricName']:
-                    for dimensions in metrics["Dimensions"]:
-                        if dimensions["Name"] == alarms[service][alarm]['Dimensions']:
-                            for priority, threshold in zip(alarms[service][alarm]['AlarmThresholds']["priority"], alarms[service][alarm]['AlarmThresholds']["alarm_threshold"]):
+                    for priority, threshold in zip(alarms[service][alarm]['AlarmThresholds']["priority"], alarms[service][alarm]['AlarmThresholds']["alarm_threshold"]):
+                        # Convert thresholds to bytes if needed
+                        if alarms[service][alarm]['Description']['ThresholdUnit'] == "GB":
+                            cw_threshold = int(threshold) * 1000000000
+                        elif alarms[service][alarm]['Description']['ThresholdUnit'] == "MB":
+                            cw_threshold = int(threshold) * 1000000
+                        else:
+                            cw_threshold = int(threshold)
 
-                                # To make alarmnames pretty, 'MB/GB' is used instead of 1000000/1000000000 bytes, needs to be in bytes for actual threshold
-                                if alarms[service][alarm]['Description']['ThresholdUnit'] == "GB":
-                                    cw_threshold = int(threshold) * 1000000000
-                                elif alarms[service][alarm]['Description']['ThresholdUnit'] == "MB":
-                                    cw_threshold = int(threshold) * 1000000
-                                else:
-                                    cw_threshold = int(threshold)
+                        # Handling dimensions
+                        for instance in instances:
 
-                                # Handling dimensions
-                                instanceDimensions = {
-                                                "Name":  f"{dimensions['Name']}",
-                                                "Value": f"{dimensions['Value']}"
-                                            }
-                                dimensionlist = []
-                                # For disk alarms there are more dimensions than other alarms
-                                try:
-                                    for item in alarms[service][alarm]['DiskDimensions']:
-                                        dimensionlist.append(item)
-                                except KeyError:    #
-                                    dimensionlist = []
-                                dimensionlist.insert(0, instanceDimensions)
+                            instanceDimensions = {
+                                "Name": f"{alarms[service][alarm]['Dimensions']}",
+                                "Value": instance
+                            }
 
-                                for instance in instances:
+                            # Initialize the dimension list
+                            dimensionlist = [instanceDimensions]
 
-                                    # Create alarms
-                                    CWclient.put_metric_alarm(
-                                        AlarmName=f"{instance}-{alarm} {alarms[service][alarm]['Description']['Operatorsymbol']} {threshold} {alarms[service][alarm]['Description']['ThresholdUnit']}",
-                                        ComparisonOperator=alarms[service][alarm]['ComparisonOperator'],
-                                        EvaluationPeriods=alarms[service][alarm]['EvaluationPeriods'],
-                                        MetricName=alarms[service][alarm]['MetricName'],
-                                        Namespace=alarms[service][alarm]['Namespace'],
-                                        Period=alarms[service][alarm]['Period'],
-                                        Statistic=alarms[service][alarm]['Statistic'],
-                                        Threshold=cw_threshold,
-                                        ActionsEnabled=True,
-                                        TreatMissingData=alarms[service][alarm]['TreatMissingData'],
-                                        AlarmDescription=f"{priority}",
-                                        Dimensions=dimensionlist,
-                                        Tags=[{"Key": "CreatedbyLambda", "Value": "True"}],
-                                    )
+                            # Add any additional disk-related dimensions if present
+                            if 'ExtraDimensions' in alarms[service][alarm]:
+                                dimensionlist.extend(alarms[service][alarm]['ExtraDimensions'])
+
+                            # Create the alarms
+                            CWclient.put_metric_alarm(
+                                AlarmName=f"{instance}-{alarm} {alarms[service][alarm]['Description']['Operatorsymbol']} {threshold} {alarms[service][alarm]['Description']['ThresholdUnit']}",
+                                ComparisonOperator=alarms[service][alarm]['ComparisonOperator'],
+                                EvaluationPeriods=alarms[service][alarm]['EvaluationPeriods'],
+                                MetricName=alarms[service][alarm]['MetricName'],
+                                Namespace=alarms[service][alarm]['Namespace'],
+                                Period=alarms[service][alarm]['Period'],
+                                Statistic=alarms[service][alarm]['Statistic'],
+                                Threshold=cw_threshold,
+                                ActionsEnabled=True,
+                                TreatMissingData=alarms[service][alarm]['TreatMissingData'],
+                                AlarmDescription=f"{priority}",
+                                Dimensions=dimensionlist,
+                                Tags=[{"Key": "CreatedbyLambda", "Value": "True"}],
+                            )
 
 def GetRunningInstances():
     get_running_instances = ec2client.describe_instances(
@@ -118,6 +118,14 @@ def GetRunningClusters():
         RunningClusterNames.append(clusters.split('/')[1])
 
     return RunningClusterNames
+
+def GetRunningCacheClusters():
+    get_running_cacheclusters = elasticlient.describe_cache_clusters()
+    RunningCacheClusters = []
+    for cachecluster in get_running_cacheclusters["CacheClusters"]:
+        RunningCacheClusters.append(cachecluster['CacheClusterId'])
+
+    return RunningCacheClusters
 
 def DeleteAlarms():
     get_alarm_info = CWclient.describe_alarms()
