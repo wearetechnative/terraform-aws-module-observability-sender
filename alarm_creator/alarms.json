@@ -63,10 +63,6 @@
                     "Value": "/"
                 },
                 {
-                    "Name": "device",
-                    "Value": "nvme0n1p1"
-                },
-                {
                     "Name": "fstype",
                     "Value": "ext4"
                 }
