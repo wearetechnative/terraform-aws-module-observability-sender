@@ -1,6 +1,7 @@
 module "lambda_cw_alarm_creator" {
   # Pinned to a tag but needs to be updated once we add an official release tag.
-  source = "git@github.com:TechNative-B-V/modules-aws.git//lambda?ref=v1.1.7"
+  #source = "git@github.com:TechNative-B-V/modules-aws.git//lambda?ref=v1.1.7"
+  source = "git@github.com:wearetechnative/terraform-aws-lambda.git?ref=13eda5f9e8ae40e51f66a45837cd41a6b35af988"
 
 
   name              = local.lambda_cw_alarm_name
@@ -17,11 +18,29 @@ module "lambda_cw_alarm_creator" {
   source_directory_location = "${path.module}/alarm_creator/"
   source_file_name          = null
 
+  layers = var.source_directory_location != null ? [aws_lambda_layer_version.custom_actions[0].arn] : null
+
   environment_variables = {
-    SNS_ARN = "${aws_sns_topic.notification_receiver.arn}"
+    SNS_ARN             = "${aws_sns_topic.notification_receiver.arn}"
+    CUSTOM_ALERT_ACTION = var.source_directory_location != null ? true : false
   }
 
   sqs_dlq_arn = var.sqs_dlq_arn
+}
+
+# Create Lambda layer to host custom_alarms.json
+
+resource "aws_lambda_layer_version" "custom_actions" {
+  count = var.source_directory_location != null ? 1 : 0
+
+  layer_name  = "alarm_creator_custom_alert_actions"
+  description = "Contains a customer specific custom_alarms.json used for the alarm_creator"
+
+  filename = data.archive_file.custom_action[0].output_path
+
+  source_code_hash = data.archive_file.custom_action[0].output_base64sha256
+
+  compatible_runtimes = ["python3.9"]
 }
 
 # Cron job event rule directly tied to lambda function.

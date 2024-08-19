@@ -14,6 +14,7 @@ module "iam_role_lambda_cw_alarm_creator" {
     "lambda_ec2_read_access" : jsondecode(data.aws_iam_policy_document.lambda_ec2_read_access.json)
     "lambda_rds_read_access" : jsondecode(data.aws_iam_policy_document.lambda_rds_read_access.json)
     "lambda_ecs_read_access" : jsondecode(data.aws_iam_policy_document.lambda_ecs_read_access.json)
+    "lambda_elasticache_read_access" : jsondecode(data.aws_iam_policy_document.lambda_elasticache_read_access.json)
   }
 
   trust_relationship = {
@@ -92,6 +93,17 @@ data "aws_iam_policy_document" "lambda_ecs_read_access" {
     resources = ["*"]
   }
 }
+
+data "aws_iam_policy_document" "lambda_elasticache_read_access" {
+  statement {
+    sid = "AllowLambdaElasticacheAccess"
+
+    actions = ["elasticache:Describe*"]
+
+    resources = ["*"]
+  }
+}
+
 
 # The Lambda role needs to access KMS key in order to access SNS topic.
 resource "aws_kms_grant" "give_lambda_role_access" {

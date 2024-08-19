@@ -16,4 +16,4 @@ repos:
       -   id: trailing-whitespace
       -   id: detect-aws-credentials
       -   id: check-json
-      -   id: pretty-format-json
+      # -   id: pretty-format-json

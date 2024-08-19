@@ -3,7 +3,7 @@
         "CPUUtilization": {
             "AlarmThresholds" : {
                 "priority": ["P1", "P2", "P3"],
-                "alarm_threshold": ["90", "80", "75"]            
+                "alarm_threshold": ["90", "80", "75"]
             },
             "ComparisonOperator" : "GreaterThanThreshold",
             "Description" : {
@@ -20,16 +20,16 @@
         }
     },
 
-    "CWAgent" : {   
+    "CWAgent" : {
         "mem_used_percent": {
             "AlarmThresholds" : {
                 "priority": ["P1", "P2", "P3"],
-                "alarm_threshold": ["90", "80", "75"] 
+                "alarm_threshold": ["90", "80", "75"]
             },
             "ComparisonOperator" : "GreaterThanThreshold",
             "Description" : {
                 "Operatorsymbol" : ">",
-                "ThresholdUnit" : "%" 
+                "ThresholdUnit" : "%"
             },
             "EvaluationPeriods" : 2,
             "MetricName" : "mem_used_percent",
@@ -43,12 +43,12 @@
         "disk_used_percent_root": {
             "AlarmThresholds" : {
                 "priority": ["P1", "P2", "P3"],
-                "alarm_threshold": ["90", "80", "75"] 
+                "alarm_threshold": ["90", "80", "75"]
             },
             "ComparisonOperator" : "GreaterThanThreshold",
             "Description" : {
                 "Operatorsymbol" : ">",
-                "ThresholdUnit" : "%" 
+                "ThresholdUnit" : "%"
             },
             "EvaluationPeriods" : 2,
             "MetricName" : "disk_used_percent",
@@ -57,16 +57,12 @@
             "Statistic" : "Average",
             "TreatMissingData" : "breaching",
             "Dimensions" : "InstanceId",
-            "DiskDimensions": [
+            "ExtraDimensions": [
                 {
                     "Name": "path",
                     "Value": "/"
                 },
                 {
-                    "Name": "device",
-                    "Value": "nvme0n1p1"
-                },
-                { 
                     "Name": "fstype",
                     "Value": "ext4"
                 }
@@ -76,12 +72,12 @@
         "disk_used_percent_sys_fs": {
             "AlarmThresholds" : {
                 "priority": ["P1", "P2", "P3"],
-                "alarm_threshold": ["90", "80", "75"] 
+                "alarm_threshold": ["90", "80", "75"]
             },
             "ComparisonOperator" : "GreaterThanThreshold",
             "Description" : {
                 "Operatorsymbol" : ">",
-                "ThresholdUnit" : "%" 
+                "ThresholdUnit" : "%"
             },
             "EvaluationPeriods" : 2,
             "MetricName" : "disk_used_percent",
@@ -90,7 +86,7 @@
             "Statistic" : "Average",
             "TreatMissingData" : "breaching",
             "Dimensions" : "InstanceId",
-            "DiskDimensions": [
+            "ExtraDimensions": [
                 {
                     "Name": "path",
                     "Value": "/sys/fs/cgroup"
@@ -109,12 +105,12 @@
         "disk_used_percent_dev": {
             "AlarmThresholds" : {
                 "priority": ["P1", "P2", "P3"],
-                "alarm_threshold": ["90", "80", "75"] 
+                "alarm_threshold": ["90", "80", "75"]
             },
             "ComparisonOperator" : "GreaterThanThreshold",
             "Description" : {
                 "Operatorsymbol" : ">",
-                "ThresholdUnit" : "%" 
+                "ThresholdUnit" : "%"
             },
             "EvaluationPeriods" : 2,
             "MetricName" : "disk_used_percent",
@@ -123,7 +119,7 @@
             "Statistic" : "Average",
             "TreatMissingData" : "breaching",
             "Dimensions" : "InstanceId",
-            "DiskDimensions": [
+            "ExtraDimensions": [
                 {
                     "Name": "path",
                     "Value": "/dev"
@@ -139,13 +135,13 @@
             ]
         }
     },
-   
+
 
     "RDS" : {
         "FreeStorageSpace": {
             "AlarmThresholds" : {
                 "priority": ["P1", "P2", "P3"],
-                "alarm_threshold": ["2", "3", "4"]           
+                "alarm_threshold": ["2", "3", "4"]
             },
             "ComparisonOperator" : "LessThanOrEqualToThreshold",
             "Description" : {
@@ -158,13 +154,13 @@
             "Period"    : 300,
             "Statistic" : "Minimum",
             "TreatMissingData" : "breaching",
-            "Dimensions" : "DBInstanceIdentifier" 
+            "Dimensions" : "DBInstanceIdentifier"
         },
-        
+
         "SwapUsage" : {
             "AlarmThresholds" : {
                 "priority": ["P1", "P2", "P3"],
-                "alarm_threshold": ["512", "400", "300"]           
+                "alarm_threshold": ["512", "400", "300"]
             },
             "ComparisonOperator" : "GreaterThanThreshold",
             "Description" : {
@@ -183,7 +179,7 @@
         "FreeableMemory" : {
             "AlarmThresholds" : {
                 "priority": ["P1", "P2", "P3"],
-                "alarm_threshold": ["20", "50", "100"]           
+                "alarm_threshold": ["20", "50", "100"]
             },
             "ComparisonOperator" : "LessThanThreshold",
             "Description" : {
@@ -204,7 +200,7 @@
         "TaskCount" : {
             "AlarmThresholds" : {
                 "priority": ["P1"],
-                "alarm_threshold": ["1"]           
+                "alarm_threshold": ["1"]
             },
             "ComparisonOperator" : "LessThanThreshold",
             "Description" : {
@@ -220,5 +216,5 @@
             "Dimensions" : "ClusterName"
         }
     }
-     
+
 }
