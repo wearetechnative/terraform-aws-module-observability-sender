@@ -136,6 +136,7 @@ You need to also clean up the SQS queue in the observablity hub account as the e
 |------|-------------|------|---------|:--------:|
 | <a name="input_eventbridge_rules"></a> [eventbridge\_rules](#input\_eventbridge\_rules) | EventBridge rule settings. | <pre>map(object({<br>    description : string<br>    state : string<br>    event_pattern : string<br>    })<br>  )</pre> | `{}` | no |
 | <a name="input_kms_key_arn"></a> [kms\_key\_arn](#input\_kms\_key\_arn) | ARN of the KMS key. | `string` | n/a | yes |
+| <a name="input_lambda_timeout"></a> [lambda\_timeout](#input\_lambda\_timeout) | Lambda function timeout. | `number` | `60` | no |
 | <a name="input_monitoring_account_configuration"></a> [monitoring\_account\_configuration](#input\_monitoring\_account\_configuration) | Configuration settings of the monitoring account. | <pre>object({<br>    sqs_name    = string<br>    sqs_region  = string<br>    sqs_account = number<br>  })</pre> | n/a | yes |
 | <a name="input_source_directory_location"></a> [source\_directory\_location](#input\_source\_directory\_location) | Source Directory location for the custom alarm creator actions.py. | `string` | `null` | no |
 | <a name="input_sqs_dlq_arn"></a> [sqs\_dlq\_arn](#input\_sqs\_dlq\_arn) | ARN of the Dead Letter Queue. | `string` | n/a | yes |
