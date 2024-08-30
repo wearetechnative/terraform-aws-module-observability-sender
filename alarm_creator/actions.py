@@ -37,10 +37,10 @@ def AWS_Alarms():
             instances = GetRunningDBInstances()
         elif service == "CWAgent":
             instances = GetRunningInstances()
-        # elif service == "ECS":
-        #     instances = GetRunningClusters()
-        # elif service == "ElastiCache":
-        #     instances = GetRunningCacheClusters()
+        elif service == "ECS":
+            instances = GetRunningClusters()
+        elif service == "ElastiCache":
+            instances = GetRunningCacheClusters()
 
         for alarm in alarms[service]:
             # Query the namespaces in CloudWatch Metrics
@@ -59,62 +59,62 @@ def AWS_Alarms():
                         else:
                             cw_threshold = int(threshold)
 
-            # Handling dimensions
-            for instance in instances:
+                        # Handling dimensions
+                        for instance in instances:
 
-                instanceDimensions = {
-                    "Name": f"{alarms[service][alarm]['Dimensions']}",
-                    "Value": instance
-                }
+                            instanceDimensions = {
+                                "Name": f"{alarms[service][alarm]['Dimensions']}",
+                                "Value": instance
+                            }
 
-                #Add any additional disk-related dimensions if present
-                if 'ExtraDimensions' in alarms[service][alarm]:
-                    dimensionlist.extend(alarms[service][alarm]['ExtraDimensions'])
+                            #Add any additional disk-related dimensions if present
+                            if 'ExtraDimensions' in alarms[service][alarm]:
+                                dimensionlist.extend(alarms[service][alarm]['ExtraDimensions'])
 
-                    for dimension in dimensionlist:
-                        if dimension["Name"] == "path" and dimension["Value"] == "/":
-                            # Query the namespaces in CloudWatch Metrics
-                            # Find the correct device dimension for the root volume
-                            response_2 = CWclient.list_metrics(Namespace=f"{alarms[service][alarm]['Namespace']}", RecentlyActive='PT3H',
-                                Dimensions=[instanceDimensions, {'Name': 'path', 'Value': '/'}]
+                                for dimension in dimensionlist:
+                                    if dimension["Name"] == "path" and dimension["Value"] == "/":
+                                        # Query the namespaces in CloudWatch Metrics
+                                        # Find the correct device dimension for the root volume
+                                        response_2 = CWclient.list_metrics(Namespace=f"{alarms[service][alarm]['Namespace']}", RecentlyActive='PT3H',
+                                            Dimensions=[instanceDimensions, {'Name': 'path', 'Value': '/'}]
+                                        )
+
+                                        for metrics in response_2["Metrics"]:
+                                            for dimension in metrics["Dimensions"]:
+                                                if dimension['Name'] == "device":
+
+                                                    dimensionlist = [
+                                                        instanceDimensions,
+                                                        {
+                                                            "Name": "device",
+                                                            "Value": f"{dimension['Value']}"
+                                                        }
+                                                    ]
+                                                    dimensionlist.extend(alarms[service][alarm]['ExtraDimensions'])
+                                    else:
+                                        continue
+                            else:
+                                #Clean up dimensionlist if not extra dimensions are present and only add the instance dimension
+                                dimensionlist = []
+                                dimensionlist = [instanceDimensions]
+
+
+                            # Create the alarms
+                            CWclient.put_metric_alarm(
+                                AlarmName=f"{instance}-{alarm} {alarms[service][alarm]['Description']['Operatorsymbol']} {threshold} {alarms[service][alarm]['Description']['ThresholdUnit']}",
+                                ComparisonOperator=alarms[service][alarm]['ComparisonOperator'],
+                                EvaluationPeriods=alarms[service][alarm]['EvaluationPeriods'],
+                                MetricName=alarms[service][alarm]['MetricName'],
+                                Namespace=alarms[service][alarm]['Namespace'],
+                                Period=alarms[service][alarm]['Period'],
+                                Statistic=alarms[service][alarm]['Statistic'],
+                                Threshold=cw_threshold,
+                                ActionsEnabled=True,
+                                TreatMissingData=alarms[service][alarm]['TreatMissingData'],
+                                AlarmDescription=f"{priority}",
+                                Dimensions=dimensionlist,
+                                Tags=[{"Key": "CreatedbyLambda", "Value": "True"}],
                             )
-
-                            for metrics in response_2["Metrics"]:
-                                for dimension in metrics["Dimensions"]:
-                                    if dimension['Name'] == "device":
-
-                                        dimensionlist = [
-                                            instanceDimensions,
-                                            {
-                                                "Name": "device",
-                                                "Value": f"{dimension['Value']}"
-                                            }
-                                        ]
-                                        dimensionlist.extend(alarms[service][alarm]['ExtraDimensions'])
-                        else:
-                            continue
-                else:
-                    #Clean up dimensionlist if not extra dimensions are present and only add the instance dimension
-                    dimensionlist = []
-                    dimensionlist = [instanceDimensions]
-
-
-                # Create the alarms
-                CWclient.put_metric_alarm(
-                    AlarmName=f"{instance}-{alarm} {alarms[service][alarm]['Description']['Operatorsymbol']} {threshold} {alarms[service][alarm]['Description']['ThresholdUnit']}",
-                    ComparisonOperator=alarms[service][alarm]['ComparisonOperator'],
-                    EvaluationPeriods=alarms[service][alarm]['EvaluationPeriods'],
-                    MetricName=alarms[service][alarm]['MetricName'],
-                    Namespace=alarms[service][alarm]['Namespace'],
-                    Period=alarms[service][alarm]['Period'],
-                    Statistic=alarms[service][alarm]['Statistic'],
-                    Threshold=cw_threshold,
-                    ActionsEnabled=True,
-                    TreatMissingData=alarms[service][alarm]['TreatMissingData'],
-                    AlarmDescription=f"{priority}",
-                    Dimensions=dimensionlist,
-                    Tags=[{"Key": "CreatedbyLambda", "Value": "True"}],
-                )
 
 
 
