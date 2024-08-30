@@ -71,6 +71,14 @@ module "observability_sender" {
 }
 ```
 
+## Put exceeded error when running alarm creator Lambda
+
+At first run you might end up with a put exceeded error where you are trying to create too many alarms at once.
+
+You need to rerun the Lambda alarm creator a few times maybe with a shorter list. This allows you to not reach the maximum threshold set by AWS.
+
+You need to also clean up the SQS queue in the observablity hub account as the error might hang in the SQS queue even though the problem is resolved.
+
 <!-- BEGIN_TF_DOCS -->
 ## Providers
 
