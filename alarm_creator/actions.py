@@ -1,4 +1,5 @@
-import boto3, json, subprocess, os
+import boto3, json, subprocess, os, time
+from botocore.exceptions import ClientError
 
 from pip import main
 
@@ -99,24 +100,52 @@ def AWS_Alarms():
                                 dimensionlist = [instanceDimensions]
 
 
-                            # Create the alarms
-                            CWclient.put_metric_alarm(
-                                AlarmName=f"{instance}-{alarm} {alarms[service][alarm]['Description']['Operatorsymbol']} {threshold} {alarms[service][alarm]['Description']['ThresholdUnit']}",
-                                ComparisonOperator=alarms[service][alarm]['ComparisonOperator'],
-                                EvaluationPeriods=alarms[service][alarm]['EvaluationPeriods'],
-                                MetricName=alarms[service][alarm]['MetricName'],
-                                Namespace=alarms[service][alarm]['Namespace'],
-                                Period=alarms[service][alarm]['Period'],
-                                Statistic=alarms[service][alarm]['Statistic'],
-                                Threshold=cw_threshold,
-                                ActionsEnabled=True,
-                                TreatMissingData=alarms[service][alarm]['TreatMissingData'],
-                                AlarmDescription=f"{priority}",
-                                Dimensions=dimensionlist,
-                                Tags=[{"Key": "CreatedbyLambda", "Value": "True"}],
+                            # Create the alarms using the retry function
+                            put_metric_alarm_with_retries(
+                                CWclient=CWclient,
+                                alarm_name=f"{instance}-{alarm} {alarms[service][alarm]['Description']['Operatorsymbol']} {threshold} {alarms[service][alarm]['Description']['ThresholdUnit']}",
+                                comparison_operator=alarms[service][alarm]['ComparisonOperator'],
+                                evaluation_periods=alarms[service][alarm]['EvaluationPeriods'],
+                                metric_name=alarms[service][alarm]['MetricName'],
+                                namespace=alarms[service][alarm]['Namespace'],
+                                period=alarms[service][alarm]['Period'],
+                                statistic=alarms[service][alarm]['Statistic'],
+                                threshold=cw_threshold,
+                                actions_enabled=True,
+                                treat_missing_data=alarms[service][alarm]['TreatMissingData'],
+                                alarm_description=f"{priority}",
+                                dimensions=dimensionlist,
+                                tags=[{"Key": "CreatedbyLambda", "Value": "True"}]
                             )
 
-
+# A helper function to handle retries with exponential backoff to prevent throttling.
+def put_metric_alarm_with_retries(CWclient, alarm_name, comparison_operator, evaluation_periods, metric_name, namespace, period, statistic, threshold, actions_enabled, treat_missing_data, alarm_description, dimensions, tags, max_retries=5):
+    retries = 0
+    while retries < max_retries:
+        try:
+            CWclient.put_metric_alarm(
+                AlarmName=alarm_name,
+                ComparisonOperator=comparison_operator,
+                EvaluationPeriods=evaluation_periods,
+                MetricName=metric_name,
+                Namespace=namespace,
+                Period=period,
+                Statistic=statistic,
+                Threshold=threshold,
+                ActionsEnabled=actions_enabled,
+                TreatMissingData=treat_missing_data,
+                AlarmDescription=alarm_description,
+                Dimensions=dimensions,
+                Tags=tags
+            )
+            break
+        except ClientError as e:
+            if e.response['Error']['Code'] == 'Throttling':
+                retries += 1
+                sleep_time = 2 ** retries
+                time.sleep(sleep_time)
+            else:
+                raise
 
 def GetRunningInstances():
     get_running_instances = ec2client.describe_instances(
