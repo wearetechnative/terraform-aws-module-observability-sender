@@ -1,7 +1,7 @@
 module "lambda_cw_alarm_creator" {
   # Pinned to a tag but needs to be updated once we add an official release tag.
   #source = "git@github.com:TechNative-B-V/modules-aws.git//lambda?ref=v1.1.7"
-  source = "git@github.com:wearetechnative/terraform-aws-lambda.git?ref=13eda5f9e8ae40e51f66a45837cd41a6b35af988"
+  source = "git@github.com:wearetechnative/terraform-aws-lambda?ref=ae0530a86c1eff7460d638e5ef885908ff5b8f88"
 
 
   name              = local.lambda_cw_alarm_name

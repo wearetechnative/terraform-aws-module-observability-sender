@@ -1,7 +1,7 @@
 #--- cw-alarm-forwarder/role.tf ---
 
 module "iam_role_lambda_payload_forwarder" {
-  source = "git@github.com:TechNative-B-V/modules-aws.git//identity_and_access_management/iam_role?ref=v1.1.7"
+  source = "git@github.com:wearetechnative/terraform-aws-iam-role?ref=0fe916c27097706237692122e09f323f55e8237e"
 
   role_name = local.lambda_payload_forwarder
   role_path = local.lambda_payload_forwarder
