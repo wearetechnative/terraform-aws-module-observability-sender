@@ -82,5 +82,18 @@ locals {
           "status" : ["Failed", "TimedOut"]
         }
       })
-  } }
+    },
+    "aws-healthdashboard-rds-rule" : {
+      "description" : "Notifies when RDS instances have operational issues or scheduled changes."
+      "state" : "ENABLED",
+      "event_pattern" : jsonencode({
+        "source" : ["aws.health"],
+        "detail-type" : ["AWS Health Event"],
+        "detail" : {
+          "service" : ["RDS"],
+          "eventTypeCategory" : ["issue", "scheduledChange"],
+        }
+      })
+    }
+  }
 }
