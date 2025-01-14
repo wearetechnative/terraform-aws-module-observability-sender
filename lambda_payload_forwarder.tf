@@ -4,7 +4,7 @@
 
 module "lambda_payload_forwarder" {
   # Pinned to a tag but needs to be updated once we add an official release tag.
-  source = "git@github.com:wearetechnative/terraform-aws-lambda.git?ref=ae0530a86c1eff7460d638e5ef885908ff5b8f88"
+  source = "github.com/wearetechnative/terraform-aws-lambda.git?ref=5ba61dffd4fd93e7ec4d4883f75acab7d56847bd"
 
   name     = local.lambda_payload_forwarder
   role_arn = module.iam_role_lambda_payload_forwarder.role_arn
