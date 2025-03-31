@@ -83,7 +83,7 @@ resource "aws_cloudwatch_event_rule" "cloudwatch_instance_termininate_rule" {
   event_bus_name = "default"
   event_pattern = jsonencode({
     "detail" : {
-      "state" : ["terminated", "stopped"]
+      "state" : ["terminated", "stopped", "stopping"]
     },
     "detail-type" : ["EC2 Instance State-change Notification"],
     "source" : ["aws.ec2"]
