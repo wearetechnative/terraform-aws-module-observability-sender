@@ -48,7 +48,7 @@ data "aws_iam_policy_document" "cloudwatch_alarms" {
   statement {
     sid = "AllowCloudWatchAlarms"
 
-    actions = ["cloudwatch:ListMetrics", "cloudwatch:DeleteAlarms", "cloudwatch:PutMetricAlarm", "cloudwatch:GetMetricStatistics", "cloudwatch:Describe*"]
+    actions = ["cloudwatch:ListMetrics", "cloudwatch:DeleteAlarms", "cloudwatch:PutMetricAlarm", "cloudwatch:GetMetricStatistics", "cloudwatch:Describe*", "cloudwatch:ListTagsForResource"]
 
     resources = ["*"]
   }
