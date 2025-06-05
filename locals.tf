@@ -14,7 +14,7 @@ locals {
         "detail-type" : ["CloudWatch Alarm State Change"],
         "detail" : {
           "configuration" : {
-            "description" : [{ "anything-but" : "Autoscaling_alarm" }]
+            "description" : [{ "anything-but" : {"wildcard": "*scaling*"} }]
           }
         }
       })
