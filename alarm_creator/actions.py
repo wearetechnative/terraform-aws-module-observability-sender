@@ -232,7 +232,8 @@ def AWS_Alarms():
                                         # Query the namespaces in CloudWatch Metrics and find the correct device dimension for the root volume
                                         response_2 = get_cached_metrics(
                                             alarms[service][alarm]['Namespace'], 
-                                            [instanceDimensions, {'Name': 'path', 'Value': '/'}]
+                                            [instanceDimensions, {'Name': 'path', 'Value': '/'}],
+                                            metrics_cache
                                         )
 
                                         for metrics in response_2["Metrics"]:
