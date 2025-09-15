@@ -137,42 +137,75 @@ def AWS_Alarms():
     alarm_configs = []  # Will store all alarm configurations
     existing_alarms = {}
 
-    # Fetch current alarms from CloudWatch at the start of each Lambda execution
     logger.info("Fetching existing CloudWatch alarms...")
     existing_alarms_start = time.time()
 
-        # Use paginator to handle potential large number of alarms
+    def normalize_alarm(alarm):
+        metric_name = alarm.get('MetricName')
+        namespace = alarm.get('Namespace')
+        dimensions = alarm.get('Dimensions', [])
+        period = alarm.get('Period')
+        statistic = alarm.get('Statistic') or alarm.get('ExtendedStatistic')
+        metrics = alarm.get('Metrics')
+
+        if metric_name is None and metrics:
+            for m in metrics:
+                ms = m.get('MetricStat')
+                if not ms:
+                    continue
+                metric = ms.get('Metric', {})
+                if metric_name is None:
+                    metric_name = metric.get('MetricName')
+                if namespace is None:
+                    namespace = metric.get('Namespace')
+                if not dimensions:
+                    dimensions = metric.get('Dimensions', [])
+                if period is None:
+                    period = ms.get('Period')
+                if statistic is None:
+                    statistic = ms.get('Stat')
+                break
+
+        if metric_name is None and not metrics:
+            return None
+
+        return {
+            'metric_name': metric_name,
+            'namespace': namespace,
+            'dimensions': dimensions or [],
+            'threshold': alarm.get('Threshold'),
+            'comparison_operator': alarm.get('ComparisonOperator'),
+            'evaluation_periods': alarm.get('EvaluationPeriods'),
+            'period': period,
+            'statistic': statistic,
+            'metrics': metrics,
+        }
+
     paginator = CWclient.get_paginator('describe_alarms')
     for page in paginator.paginate(AlarmTypes=['MetricAlarm']):
-        for alarm in page['MetricAlarms']:
+        for alarm in page.get('MetricAlarms', []):
+            try:
+                response = CWclient.list_tags_for_resource(ResourceARN=alarm['AlarmArn'])
+            except Exception as e:
+                logger.warning(f"Could not list tags for alarm {alarm.get('AlarmName')}: {e}")
+                continue
 
-            # Get tags separately using list_tags_for_resource
-            response = CWclient.list_tags_for_resource(
-                ResourceARN=alarm['AlarmArn']
+            has_lambda_tag = any(
+                t.get('Key') == 'CreatedbyLambda' and t.get('Value') == 'True'
+                for t in response.get('Tags', [])
             )
+            if not has_lambda_tag:
+                continue
 
-            # Check if the alarm has our Lambda tag
-            has_lambda_tag = False
-            for tag in response.get('Tags', []):
-                if tag.get('Key') == 'CreatedbyLambda' and tag.get('Value') == 'True':
-                    has_lambda_tag = True
-                    break
-            
-            if has_lambda_tag:
-                # Store alarm config for comparison
-                existing_alarms[alarm['AlarmName']] = {
-                    'metric_name': alarm['MetricName'],
-                    'namespace': alarm['Namespace'],
-                    'dimensions': alarm['Dimensions'],
-                    'threshold': alarm['Threshold'],
-                    'comparison_operator': alarm['ComparisonOperator'],
-                    'evaluation_periods': alarm['EvaluationPeriods'],
-                    'period': alarm['Period'],
-                    'statistic': alarm['Statistic']
-                }
-    
+            config = normalize_alarm(alarm)
+            if config is None:
+                logger.debug(f"Skipping alarm without resolvable metric: {alarm.get('AlarmName')}")
+                continue
+
+            existing_alarms[alarm['AlarmName']] = config
+
     logger.info(f"Found {len(existing_alarms)} existing Lambda-created alarms in {time.time() - existing_alarms_start:.2f} seconds")
-        
+
     skipped_count = 0
     for service in alarms:
 
