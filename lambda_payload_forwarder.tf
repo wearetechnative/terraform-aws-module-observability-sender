@@ -15,7 +15,7 @@ module "lambda_payload_forwarder" {
   handler     = "lambda_function.lambda_handler"
   memory_size = 128
   timeout     = 30
-  runtime     = "python3.9"
+  runtime     = "python3.13"
 
   source_type               = "local"
   source_directory_location = "${path.module}/payload_forwarder/"

@@ -11,7 +11,7 @@ module "lambda_cw_alarm_creator" {
   handler     = "lambda_function.lambda_handler"
   memory_size = 128
   timeout     = var.lambda_timeout
-  runtime     = "python3.9"
+  runtime     = "python3.13"
 
   source_type               = "local"
   source_directory_location = "${path.module}/alarm_creator/"
@@ -39,7 +39,7 @@ resource "aws_lambda_layer_version" "custom_actions" {
 
   source_code_hash = data.archive_file.custom_action[0].output_base64sha256
 
-  compatible_runtimes = ["python3.9"]
+  compatible_runtimes = ["python3.13"]
 }
 
 # Cron job event rule directly tied to lambda function.
