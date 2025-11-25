@@ -13,7 +13,7 @@ resource "aws_cloudwatch_event_rule" "cost_anomaly" {
     "detail-type" : ["Cost Anomaly Detection Alert"],
     "detail" : {
         "impact" : {
-            "totalImpact" : [{ "numeric" : [">", 50] }]
+            "totalImpact" : [{ "numeric" : [">", var.anomaly_threshold] }]
         }
     }
   })

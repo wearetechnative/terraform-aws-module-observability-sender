@@ -41,3 +41,9 @@ variable "lambda_timeout" {
   type        = number
   default     = 60
 }
+
+variable "anomaly_threshold" {
+  description = "Threshold of when the anomaly alarm will trigger"
+  type = number
+  default = 50  
+}
