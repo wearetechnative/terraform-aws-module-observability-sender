@@ -156,7 +156,7 @@ data "aws_iam_policy_document" "sns_topic_policy" {
 
     principals {
       type        = "Service"
-      identifiers = ["ce.amazonaws.com"]
+      identifiers = ["costalerts.amazonaws.com"]
     }
 
     resources = [aws_sns_topic.notification_receiver.arn]
