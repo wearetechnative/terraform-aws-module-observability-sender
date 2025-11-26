@@ -147,4 +147,18 @@ data "aws_iam_policy_document" "sns_topic_policy" {
 
     resources = [aws_sns_topic.notification_receiver.arn]
   }
+
+  # Allow Cost Anomaly Detection service to publish alerts to the topic.
+  statement {
+    sid     = "AllowCostAnomalyDetection"
+    effect  = "Allow"
+    actions = ["SNS:Publish"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ce.amazonaws.com"]
+    }
+
+    resources = [aws_sns_topic.notification_receiver.arn]
+  }
 }
