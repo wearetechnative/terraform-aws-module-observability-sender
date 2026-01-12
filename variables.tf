@@ -47,3 +47,9 @@ variable "anomaly_threshold" {
   type = number
   default = 50  
 }
+
+variable "enable_cost_anomaly_detection" {
+  description = "Whether to enable cost anomaly detection"
+  default = false
+  type = bool
+}

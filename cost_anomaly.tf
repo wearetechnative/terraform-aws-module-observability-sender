@@ -1,10 +1,12 @@
-resource "aws_ce_anomaly_monitor" "test" {
+resource "aws_ce_anomaly_monitor" "cost_anomaly" {
+  count = var.enable_cost_anomaly_detection == true ? 1 : 0
   name              = "AWSServiceMonitor"
   monitor_type      = "DIMENSIONAL"
   monitor_dimension = "SERVICE"
 }
 
 resource "aws_ce_anomaly_subscription" "cost_anomaly" {
+  count = var.enable_cost_anomaly_detection == true ? 1 : 0
   name               = "cost-anomaly-alerts"
   frequency          = "IMMEDIATE"
   monitor_arn_list   = [aws_ce_anomaly_monitor.test.arn]
