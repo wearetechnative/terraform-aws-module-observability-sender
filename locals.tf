@@ -77,7 +77,8 @@ locals {
       "state" : "ENABLED",
       "event_pattern" : jsonencode({
         "source" : ["aws.ssm"],
-        "detail-type" : ["EC2 Command Invocation Status-change Notification", "EC2 State Manager Instance Association State Change"],
+        #"detail-type" : ["EC2 Command Invocation Status-change Notification", "EC2 State Manager Instance Association State Change"],
+        "detail-type" : ["EC2 State Manager Association State Change", "EC2 State Manager Instance Association State Change"],
         "detail" : {
           "status" : ["Failed", "TimedOut"]
         }
