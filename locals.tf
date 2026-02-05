@@ -77,10 +77,13 @@ locals {
       "state" : "ENABLED",
       "event_pattern" : jsonencode({
         "source" : ["aws.ssm"],
-        #"detail-type" : ["EC2 Command Invocation Status-change Notification", "EC2 State Manager Instance Association State Change"],
-        "detail-type" : ["EC2 State Manager Association State Change", "EC2 State Manager Instance Association State Change"],
+        "detail-type" : ["EC2 Command Invocation Status-change Notification", "EC2 State Manager Instance Association State Change"],
         "detail" : {
-          "status" : ["Failed", "TimedOut"]
+          "status" : ["Failed", "TimedOut"],
+          "document-name": [{
+            "anything-but": ["AWS-GatherSoftwareInventory"] 
+            # This a workaround for a known issue also documented in github https://github.com/aws/amazon-ssm-agent/issues/584
+          }] 
         }
       })
     },
