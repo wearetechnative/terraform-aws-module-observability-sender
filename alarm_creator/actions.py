@@ -41,8 +41,8 @@ def GetRunningInstances():
         for instance in reservations["Instances"]:
             for tag in instance["Tags"]:
                  # Skip instance if it has the ASG tag
-                if any(tag["Key"] == "aws:autoscaling:groupName" for tag in instance["Tags"]):
-                    continue
+                # if any(tag["Key"] == "aws:autoscaling:groupName" for tag in instance["Tags"]):
+                #     continue
                 # Otherwise add it once
                 if instance["InstanceId"] not in RunningInstances:
                     RunningInstances.append(instance["InstanceId"])
