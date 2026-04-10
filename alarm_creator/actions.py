@@ -40,9 +40,9 @@ def GetRunningInstances():
     for reservations in get_running_instances["Reservations"]:
         for instance in reservations["Instances"]:
             for tag in instance["Tags"]:
-                 # Skip instance if it has the ASG tag
-                # if any(tag["Key"] == "aws:autoscaling:groupName" for tag in instance["Tags"]):
-                #     continue
+                # Skip instance if it is a nat instance
+                if any(tag["Key"] == "aws:autoscaling:groupName"  and "ec2-asg-nat" in tag["Value"] for tag in instance["Tags"]):
+                    continue
                 # Otherwise add it once
                 if instance["InstanceId"] not in RunningInstances:
                     RunningInstances.append(instance["InstanceId"])
