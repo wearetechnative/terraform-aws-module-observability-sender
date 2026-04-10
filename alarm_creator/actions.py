@@ -43,6 +43,8 @@ def GetRunningInstances():
                 # Skip instance if it is a nat instance
                 if any(tag["Key"] == "aws:autoscaling:groupName"  and "ec2-asg-nat" in tag["Value"] for tag in instance["Tags"]):
                     continue
+                if any(tag["Key"] == "skip_alarm_creation" and tag["Value"] == "true" for tag in instance["Tags"]):
+                    continue
                 # Otherwise add it once
                 if instance["InstanceId"] not in RunningInstances:
                     RunningInstances.append(instance["InstanceId"])
