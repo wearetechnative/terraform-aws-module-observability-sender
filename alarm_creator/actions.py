@@ -392,7 +392,7 @@ def DeleteAlarms():
     )
     for page in alarms_response:
     # collect alarm metrics and compare alarm metric instanceId with instance id's in array. if the state reason is breaching and instance does not exist delete alarm.
-        for metricalarm in get_alarm_info["MetricAlarms"]:
+        for metricalarm in page["MetricAlarms"]:
             instance_id = list(filter(lambda x: x["Name"] == "InstanceId", metricalarm["Dimensions"]))
             rds_instance_name = list(filter(lambda x: x["Name"] == "DBInstanceIdentifier", metricalarm["Dimensions"]))
 
