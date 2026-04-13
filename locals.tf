@@ -103,7 +103,7 @@ locals {
       "description" : "Monitor deletion of CloudWatch alarms.",
       "state" : "ENABLED",
       "event_pattern" : jsonencode({
-        "source" : ["aws.cloudwatch"],
+        "source" : ["aws.monitoring"],
         "detail-type" : ["AWS API Call via CloudTrail"],
         "detail" : {
           "eventSource" : ["monitoring.amazonaws.com"],
