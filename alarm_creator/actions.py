@@ -381,18 +381,24 @@ def put_metric_alarm_with_retries(CWclient, alarm_name, comparison_operator, eva
 
 
 def DeleteAlarms():
-    get_alarm_info = CWclient.describe_alarms()
     RunningInstances = GetRunningInstances()
     RunningRDSInstances = GetRunningDBInstances()
-
+    get_alarm_info = CWclient.get_paginator('describe_alarms')
+    alarms_response = get_alarm_info.paginate(
+        PaginationConfig={
+        'MaxItems': 500,
+        'PageSize': 100
+        }
+    )
+    for page in alarms_response:
     # collect alarm metrics and compare alarm metric instanceId with instance id's in array. if the state reason is breaching and instance does not exist delete alarm.
-    for metricalarm in get_alarm_info["MetricAlarms"]:
-        instance_id = list(filter(lambda x: x["Name"] == "InstanceId", metricalarm["Dimensions"]))
-        rds_instance_name = list(filter(lambda x: x["Name"] == "DBInstanceIdentifier", metricalarm["Dimensions"]))
+        for metricalarm in page["MetricAlarms"]:
+            instance_id = list(filter(lambda x: x["Name"] == "InstanceId", metricalarm["Dimensions"]))
+            rds_instance_name = list(filter(lambda x: x["Name"] == "DBInstanceIdentifier", metricalarm["Dimensions"]))
 
-        if len(instance_id) == 1:
-            if instance_id[0]["Value"] not in RunningInstances:
-                CWclient.delete_alarms(AlarmNames=[metricalarm["AlarmName"]])
-        elif len(rds_instance_name) == 1:
-            if rds_instance_name[0]["Value"] not in RunningRDSInstances:
-                CWclient.delete_alarms(AlarmNames=[metricalarm["AlarmName"]])
+            if len(instance_id) == 1:
+                if instance_id[0]["Value"] not in RunningInstances:
+                    CWclient.delete_alarms(AlarmNames=[metricalarm["AlarmName"]])
+            elif len(rds_instance_name) == 1:
+                if rds_instance_name[0]["Value"] not in RunningRDSInstances:
+                    CWclient.delete_alarms(AlarmNames=[metricalarm["AlarmName"]])
