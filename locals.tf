@@ -98,6 +98,19 @@ locals {
           "eventTypeCategory" : ["issue", "scheduledChange"],
         }
       })
+    },
+    "aws-cloudwatch-alarm-delete-rule" : {
+      "description" : "Monitor deletion of CloudWatch alarms.",
+      "state" : "ENABLED",
+      "event_pattern" : jsonencode({
+        "source" : ["aws.monitoring"],
+        "detail-type" : ["AWS API Call via CloudTrail"],
+        "detail" : {
+          "eventSource" : ["monitoring.amazonaws.com"],
+          "eventName" : ["DeleteAlarms"],
+          "errorCode" : [{ "exists" : false }]
+        }
+      })
     }
   }
 }
