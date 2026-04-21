@@ -131,6 +131,66 @@ def compare_dimensions(existing_dims, new_dims):
     
     return existing_set == new_set
 
+def build_dimension_list(instanceDimensions, extra_dimensions, namespace, metrics_cache):
+
+    dimensionlist = [instanceDimensions]
+
+    if not extra_dimensions:
+        return dimensionlist
+
+    dimensionlist.extend(extra_dimensions)
+
+    has_root_path = any(
+        d["Name"] == "path" and d["Value"] == "/"
+        for d in extra_dimensions
+    )
+
+    if not has_root_path:
+        return dimensionlist
+
+    response_root = get_cached_metrics(
+        namespace,
+        [instanceDimensions, {'Name': 'path', 'Value': '/'}],
+        metrics_cache
+    )
+
+    found_device = None
+    found_fstype = None
+
+    for metric in response_root["Metrics"]:
+        dims = {d["Name"]: d["Value"] for d in metric["Dimensions"]}
+
+        if dims.get("path") == "/":
+            found_device = dims.get("device")
+            found_fstype = dims.get("fstype")
+            break
+
+    # If this is a root filesystem alarm, we need both dimensions
+    # otherwise the alarm may point to a non-existent metric
+    if not found_device or not found_fstype:
+        logger.warning(
+            "Could not resolve root filesystem dimensions for %s=%s in namespace %s",
+            instanceDimensions["Name"],
+            instanceDimensions["Value"],
+            namespace
+        )
+        return None
+
+    merged_dimensions = {
+        instanceDimensions["Name"]: instanceDimensions["Value"]
+    }
+
+    for d in extra_dimensions:
+        merged_dimensions[d["Name"]] = d["Value"]
+
+    merged_dimensions["device"] = found_device
+    merged_dimensions["fstype"] = found_fstype
+
+    return [
+        {"Name": name, "Value": value}
+        for name, value in merged_dimensions.items()
+    ]
+
 # Alarm creator
 def AWS_Alarms():
 
@@ -257,32 +317,24 @@ def AWS_Alarms():
 
                             dimensionlist = [instanceDimensions]
 
+
                             # Add any additional disk-related dimensions if present
                             if 'ExtraDimensions' in alarms[service][alarm]:
-                                dimensionlist.extend(alarms[service][alarm]['ExtraDimensions'])
+                                extra_dimensions = alarms[service][alarm].get('ExtraDimensions', [])
+                                dimensionlist = build_dimension_list(
+                                    instanceDimensions,
+                                    extra_dimensions,
+                                    alarms[service][alarm]['Namespace'],
+                                    metrics_cache
+                                )
+                                if dimensionlist is None:
+                                    logger.info(
+                                        "Skipping %s for %s because no valid dimension set was found",
+                                        alarm,
+                                        instance
+                                    )
+                                    continue
 
-                                for dimension in dimensionlist:
-                                    if dimension["Name"] == "path" and dimension["Value"] == "/":
-
-                                        # Query the namespaces in CloudWatch Metrics and find the correct device dimension for the root volume
-                                        response_2 = get_cached_metrics(
-                                            alarms[service][alarm]['Namespace'], 
-                                            [instanceDimensions, {'Name': 'path', 'Value': '/'}],
-                                            metrics_cache
-                                        )
-
-                                        for metrics in response_2["Metrics"]:
-                                            for dimension in metrics["Dimensions"]:
-                                                if dimension['Name'] == "device":
-
-                                                    dimensionlist = [
-                                                        instanceDimensions,
-                                                        {
-                                                            "Name": "device",
-                                                            "Value": f"{dimension['Value']}"
-                                                        }
-                                                    ]
-                                                    dimensionlist.extend(alarms[service][alarm]['ExtraDimensions'])
                             alarm_name = f"{instance}-{alarm} {alarms[service][alarm]['Description']['Operatorsymbol']} {threshold} {alarms[service][alarm]['Description']['ThresholdUnit']}"
 
                             # Skip if alarm exists with same config
