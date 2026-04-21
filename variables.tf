@@ -39,5 +39,5 @@ variable "source_directory_location" {
 variable "lambda_timeout" {
   description = "Lambda function timeout."
   type        = number
-  default     = 60
+  default     = 180
 }
