@@ -9,6 +9,7 @@ module "iam_role_lambda_payload_forwarder" {
   customer_managed_policies = {
     "lambda_payload_forwarder_dlq_policy" : jsondecode(data.aws_iam_policy_document.lambda_payload_forwarder_dlq_policy.json)
     "lambda_monitoring_account_sqs_access_policy" : jsondecode(data.aws_iam_policy_document.lambda_monitoring_account_sqs_access_policy.json)
+    "lambda_AllowDescribeEC2Instances": jsondecode(data.aws_iam_policy_document.lambda_AllowDescribeEC2Instances.json)
   }
 
   trust_relationship = {
@@ -35,5 +36,16 @@ data "aws_iam_policy_document" "lambda_monitoring_account_sqs_access_policy" {
     actions = ["sqs:*"]
 
     resources = [local.monitoring_account_sqs_arn]
+  }
+}
+
+data "aws_iam_policy_document" "lambda_AllowDescribeEC2Instances" {
+  statement {
+    sid = "AllowDescribeEC2Instances"
+
+    effect  = "Allow"
+    actions = ["ec2:DescribeInstances"]
+
+    resources = ["*"]
   }
 }
