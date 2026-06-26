@@ -54,7 +54,7 @@ def lambda_handler(event, context):
                     )
 
                     if (
-                        metric.get("namespace") == "AWS/EC2"
+                        metric.get("namespace") == "AWS/EC2" or metric.get("namespace") == "CWAgent"
                     ):
                         instance_id = (
                             metric.get("dimensions", {})
