@@ -1,4 +1,4 @@
-# Terraform AWS Observability Sender ![](https://img.shields.io/github/workflow/status/TechNative-B-V/terraform-aws-module-name/Lint?style=plastic)
+# Terraform AWS Observability Sender ![](https://img.shields.io/github/actions/workflow/status/wearetechnative/terraform-aws-module-observability-sender/tflint.yaml?branch=main&style=plastic)
 
 <!-- SHIELDS -->
 This Terraform module implements a serverless observability stack which can optionally create CloudWatch alarms and forwards [EventBridge events](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-events.html) to an SQS queue.
