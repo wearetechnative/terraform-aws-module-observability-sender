@@ -20,7 +20,7 @@ module "lambda_cw_alarm_creator" {
   layers = var.source_directory_location != null ? [aws_lambda_layer_version.custom_actions[0].arn] : null
 
   environment_variables = {
-    SNS_ARN             = "${aws_sns_topic.notification_receiver.arn}"
+    SNS_ARN             = aws_sns_topic.notification_receiver.arn
     CUSTOM_ALERT_ACTION = var.source_directory_location != null ? true : false
   }
 
