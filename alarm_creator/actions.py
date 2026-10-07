@@ -39,15 +39,15 @@ def GetRunningInstances():
     # Create a list of instance names 
     for reservations in get_running_instances["Reservations"]:
         for instance in reservations["Instances"]:
-            for tag in instance["Tags"]:
-                # Skip instance if it is a nat instance
-                if any(tag["Key"] == "aws:autoscaling:groupName"  and "ec2-asg-nat" in tag["Value"] for tag in instance["Tags"]):
-                    continue
-                if any(tag["Key"] == "skip_alarm_creation" and tag["Value"] == "true" for tag in instance["Tags"]):
-                    continue
-                # Otherwise add it once
-                if instance["InstanceId"] not in RunningInstances:
-                    RunningInstances.append(instance["InstanceId"])
+            tags = instance.get("Tags", [])
+            # Skip instance if it is a nat instance
+            if any(tag["Key"] == "aws:autoscaling:groupName"  and "ec2-asg-nat" in tag["Value"] for tag in tags):
+                continue
+            if any(tag["Key"] == "skip_alarm_creation" and tag["Value"] == "true" for tag in tags):
+                continue
+            # Otherwise add it once
+            if instance["InstanceId"] not in RunningInstances:
+                RunningInstances.append(instance["InstanceId"])
 
     return RunningInstances
 
